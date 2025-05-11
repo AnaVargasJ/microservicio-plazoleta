@@ -1,5 +1,9 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.commons.domains.generic;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.NitValido;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.NombreValido;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.TelefonoValido;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.FieldIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +21,7 @@ public class RestauranteDTO implements Serializable {
 
 
 
-    @NotBlank
+    @NombreValido
     @Pattern(regexp = "^(?!\\d+$).*$", message = "El nombre no puede ser solo números")
     @Schema(description = "Nombre del restaurante. Puede contener números, pero no solo números", example = "Restaurante 123", type = "string")
     private String nombre;
@@ -28,15 +32,16 @@ public class RestauranteDTO implements Serializable {
 
     @NotBlank
     @Email
+    @FieldIgnore
     @Schema(description = "Correo electrónico del usuario", example = "usuario@correo.com", type = "string", format = "email")
     private String correo;
 
-    @NotBlank
+    @NitValido
     @Pattern(regexp = "^[0-9]+$", message = "El NIT debe ser numérico")
     @Schema(description = "NIT del restaurante, solo números", example = "9012345678", type = "string")
     private String nit;
 
-    @NotBlank
+    @TelefonoValido
     @Pattern(regexp = "^\\+?[0-9]{1,13}$", message = "El teléfono debe ser numérico, máximo 13 caracteres y puede iniciar con +")
     @Schema(description = "Teléfono del restaurante, puede iniciar con +, máximo 13 caracteres", example = "+573005698325", type = "string", maxLength = 13)
     private String telefono;

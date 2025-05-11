@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.model.entities;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

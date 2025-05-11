@@ -1,18 +1,26 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class GenericHttpClient {
 
     private final WebClient.Builder webClientBuilder;
+
+
+    @Autowired
+    public GenericHttpClient(WebClient.Builder webClientBuilder) {
+        this.webClientBuilder = webClientBuilder;
+    }
 
     public Map<String, Object> sendRequest(String url, HttpMethod method, Map<String, Object> body,
                                            Map<String, String> headers) {
@@ -32,19 +40,31 @@ public class GenericHttpClient {
                 headersSpec = headersSpec.header(entry.getKey(), entry.getValue());
             }
         }
+
         try {
-            return headersSpec
-                    .retrieve()
-                    .onStatus(HttpStatusCode::isError, response -> {
-                        return Mono.error(new RuntimeException("Error HTTP: " + response.statusCode()));
-                    })
-                    .bodyToMono(Map.class)
+            String rawResponse = headersSpec
+                    .exchangeToMono(response -> response.bodyToMono(String.class))
                     .block();
-        }catch (Exception e) {
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> responseMap;
+
+            try {
+                responseMap = mapper.readValue(rawResponse, Map.class);
+            } catch (Exception jsonEx) {
+                responseMap = new HashMap<>();
+                responseMap.put("mensaje", "Error al parsear la respuesta JSON");
+                responseMap.put("respuesta_cruda", rawResponse);
+                responseMap.put("error_detalle", jsonEx.getMessage());
+            }
+
+            return responseMap;
+
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error en la solicitud HTTP: " + e.getMessage());
         }
-
-
     }
+
+
 }

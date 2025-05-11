@@ -4,18 +4,16 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.se
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.GenericHttpClient;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.SimpleGrantedAuthorityJsonCreator;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import java.io.IOException;
 import java.util.*;
 
+@Profile("!test")
 @Slf4j
 public class JwtValidationFilter extends BasicAuthenticationFilter {
 
@@ -38,8 +37,8 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
     @Value("${default.password}")
     private String password;
 
-    @Value("${urlUsuarios}")
-    private String url;
+    @Value("${microservicioUsuarios}")
+    private String urlUsuarios;
 
 
 
@@ -79,10 +78,10 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
             String username = decodedJWT.getSubject();
             log.info("Realizando login para el usuario: {}", username);
-            String loginUrl = url + "/login";
+            String loginUrl = this.urlUsuarios + "/login";
 
             log.info("Realizando solicitud de login a la URL: {}", loginUrl);
-            log.info("Con username: {}, y password: {}", username, password);
+            log.info("Con username: {}, y password: {}", username);
 
 
             body.put("correo", username);
@@ -168,10 +167,11 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    private boolean isTokenExpired(Date exp) {
+    private Boolean isTokenExpired(Date exp) {
         Date currentDate = new Date();
         return exp.before(currentDate);
     }
+
 
 
 }
