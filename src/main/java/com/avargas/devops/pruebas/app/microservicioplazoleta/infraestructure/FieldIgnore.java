@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.retopragma.infraestructure;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

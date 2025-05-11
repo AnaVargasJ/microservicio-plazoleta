@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.retopragma.infraestructure.security;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

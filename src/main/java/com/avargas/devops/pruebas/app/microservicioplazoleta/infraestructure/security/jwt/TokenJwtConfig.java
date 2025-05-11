@@ -1,7 +1,8 @@
-package com.avargas.devops.pruebas.app.retopragma.infraestructure.security.jwt;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt;
+
+import io.jsonwebtoken.Jwts;
 
 import javax.crypto.SecretKey;
-import io.jsonwebtoken.Jwts;
 
 public interface TokenJwtConfig {
 

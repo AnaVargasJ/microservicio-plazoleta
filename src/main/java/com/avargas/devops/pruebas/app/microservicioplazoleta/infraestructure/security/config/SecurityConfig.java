@@ -1,8 +1,7 @@
-package com.avargas.devops.pruebas.app.retopragma.infraestructure.security.config;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.config;
 
-import com.avargas.devops.pruebas.app.retopragma.infraestructure.security.CustomAccessDeniedHandler;
-import com.avargas.devops.pruebas.app.retopragma.infraestructure.security.auth.JwtAuthenticationFilter;
-import com.avargas.devops.pruebas.app.retopragma.infraestructure.security.auth.JwtValidationFilter;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.GenericHttpClient;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.auth.JwtValidationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private final GenericHttpClient genericHttpClient;
 
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
@@ -30,29 +30,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    JwtValidationFilter jwtValidationFilter() throws  Exception {
+        return new JwtValidationFilter(authenticationManager(), genericHttpClient);
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests( (authz) -> authz
-                        .requestMatchers("/api/v1/usuarios/**").permitAll()
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/v2/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(exception -> exception
-                        .accessDeniedHandler(customAccessDeniedHandler)
-                )
-                .httpBasic(Customizer.withDefaults())
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtValidationFilter(authenticationManager()))
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .addFilter(jwtValidationFilter())
                 .csrf(config -> config.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

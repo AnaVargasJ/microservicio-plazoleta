@@ -1,7 +1,8 @@
-package com.avargas.devops.pruebas.app.retopragma.infraestructure.converter;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.converter;
 
-import com.avargas.devops.pruebas.app.retopragma.infraestructure.FieldIgnore;
-import com.avargas.devops.pruebas.app.retopragma.infraestructure.FieldMapping;
+
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.FieldIgnore;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.FieldMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class GenericConverter  {
+public class GenericConverter {
     private static final String DATE_FORMAT = "dd/MM/yyyy";
 
     public static <E, D> D mapEntityToDto(E entity, Class<D> dtoClass) {
