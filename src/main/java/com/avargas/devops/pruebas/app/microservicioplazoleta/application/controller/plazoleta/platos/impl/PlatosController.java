@@ -79,6 +79,51 @@ public class PlatosController implements IPlatosController {
     }
 
 
+    @Override
+    @PutMapping("/modificarPlato/{idPlato}")
+    @PreAuthorize("hasRole('ROLE_PROP')")
+    @Operation(
+            summary = "Modificar Plato",
+            description = "Permite al propietario de un restaurante crear modificar un plato con la descripcion o precio"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Se modificó correctamente el plato",
+                    content = @Content(schema = @Schema(implementation = Map.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "No se encontro plato asociado al restaurante",
+                    content = @Content(schema = @Schema(implementation = Map.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Token inválido o no enviado",
+                    content = @Content(schema = @Schema(implementation = Map.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso denegado: solo el propietario del restaurante puede crear platos",
+                    content = @Content(schema = @Schema(implementation = Map.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor al intentar modificar el plato",
+                    content = @Content(schema = @Schema(implementation = Map.class))
+            )
+    })
+    public ResponseEntity<?> modificarPlato(HttpServletRequest request,@PathVariable("idPlato") Long id,
+                                            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                    description = "Datos del plato a modificar",
+                                                    required = true,
+                                                    content = @Content(schema = @Schema(implementation = PlatoDTOUpdate.class)))
+                                            @Valid @RequestBody PlatoDTOUpdate platoDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            return validationService.validate(result);
+        }
 
+        return platoService.modificarPlato(request, id, platoDTO);
+    }
 
 }

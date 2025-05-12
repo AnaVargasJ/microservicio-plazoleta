@@ -57,5 +57,33 @@ public class PlatoService implements IPlatoService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> modificarPlato(HttpServletRequest request, Long id, PlatoDTOUpdate platoDTO) {
+        try {
+            Map<String, Object> respuesta = new HashMap<>();
+
+            ResponseEntity<Map<String, Object>> response = platoRepository.findById(id)
+                    .map(plato -> {
+                        plato.setDescripcion(platoDTO.getDescripcion());
+                        plato.setPrecio(platoDTO.getPrecio());
+                        platoRepository.save(plato);
+
+                        respuesta.put("mensaje", "Plato modificado correctamente");
+                        respuesta.put("codigo", HttpStatus.OK.value());
+                        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+                    })
+                    .orElseGet(() -> {
+                        respuesta.put("mensaje", "No se encontró el plato con ID " + id);
+                        respuesta.put("codigo", HttpStatus.NOT_FOUND.value());
+                        return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
+                    });
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error al modificar el plato: {}", e.getMessage());
+            return new ResponseEntity<>("Error al modificar el plato", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

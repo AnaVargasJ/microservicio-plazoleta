@@ -11,5 +11,7 @@ public interface IPlatoService {
 
     ResponseEntity<?> crearPlato(HttpServletRequest request, PlatoDTO  platoDTO);
 
+    ResponseEntity<?> modificarPlato(HttpServletRequest request, Long id,
+                                     PlatoDTOUpdate platoDTO);
 
 }

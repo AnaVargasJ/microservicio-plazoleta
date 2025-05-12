@@ -9,4 +9,6 @@ import org.springframework.validation.BindingResult;
 public interface IPlatosController {
     ResponseEntity<?> crearPlato(HttpServletRequest request, PlatoDTO platoDTO, BindingResult result);
 
+    ResponseEntity<?> modificarPlato(HttpServletRequest request,Long id,
+                                     PlatoDTOUpdate platoDTO, BindingResult result);
 }
