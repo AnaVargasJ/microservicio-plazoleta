@@ -24,6 +24,13 @@ public class SecurityConfig {
 
     private final GenericHttpClient genericHttpClient;
 
+    private static final String[] WHITE_LIST_URL = { "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/public/**"};
+
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -40,7 +47,7 @@ public class SecurityConfig {
         HttpSecurity security = http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll()  // Ajusta según tus rutas públicas
+                        .requestMatchers(WHITE_LIST_URL).permitAll()  // Ajusta según tus rutas públicas
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

@@ -101,7 +101,6 @@ class MicroservicioPlazoletaApplicationTests {
 
     @Test
     void crearRestaurante_CuandoFallaConsultaCorreo_DeberiaRetornar404() {
-        // Simular respuesta 404 desde el microservicio de propietarios
         stubFor(get(urlPathEqualTo("/api/v1/usuarios/buscarPorCorreo/elcorreo12o@correo.com"))
                 .willReturn(aResponse()
                         .withStatus(404)
@@ -120,7 +119,7 @@ class MicroservicioPlazoletaApplicationTests {
         RestauranteDTO dto = RestauranteDTO.builder()
                 .nombre("Restaurante Falla")
                 .direccion("Calle Falsa 123")
-                .correo("elcorreo12o@correo.com") // debe coincidir con stub
+                .correo("elcorreo12o@correo.com")
                 .nit("9999999999")
                 .telefono("+573001112233")
                 .urlLogo("https://miapp.com/logo-falla.png")
@@ -149,7 +148,7 @@ class MicroservicioPlazoletaApplicationTests {
         RestauranteDTO dto = RestauranteDTO.builder()
                 .nombre("Restaurante Excepcion")
                 .direccion("Calle Error 500")
-                .correo("elcorreo12o@correo.com") // debe coincidir con stub
+                .correo("elcorreo12o@correo.com")
                 .nit("1234567890")
                 .telefono("+573001112233")
                 .urlLogo("https://miapp.com/logo-error.png")

@@ -42,6 +42,7 @@ public class RestauranteService implements IRestauranteService {
 
         Restaurante restaurante = new Restaurante();
 
+
         try {
 
             String token = "Bearer " + request.getHeader("Authorization");
@@ -88,8 +89,8 @@ public class RestauranteService implements IRestauranteService {
 
 
         } catch (Exception e) {
-            log.error("Error al crear el propietario: {}", e.getMessage());
-            return new ResponseEntity<>("Error al crear el Restairamte", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error al crear el Restaurante: {}", e.getMessage());
+            return new ResponseEntity<>("Error al crear el Restaurante", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

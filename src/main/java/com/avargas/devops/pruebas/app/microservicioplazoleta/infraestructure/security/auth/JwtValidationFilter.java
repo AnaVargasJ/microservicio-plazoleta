@@ -3,6 +3,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.se
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.enums.RolUsuario;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.GenericHttpClient;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,16 +15,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,11 +33,25 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
     private final GenericHttpClient loginClient;
 
-    @Value("${default.password}")
-    private String password;
+    @Value("${default.password.admin}")
+    private String passwordAdmin;
+
+    @Value("${default.password.prop}")
+    private String passwordProp;
+
+    @Value("${default.password.emp}")
+    private String passwordCli;
+
+    @Value("${default.password.cli}")
+    private String passwordEmp;
+
+    @Value("${microserviciopropietarios}")
+    private String urlPropietarios;
 
     @Value("${microservicioUsuarios}")
     private String urlUsuarios;
+
+    private String password;
 
 
 
@@ -77,6 +90,34 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             }
 
             String username = decodedJWT.getSubject();
+
+
+            String url = this.urlPropietarios + "/buscarPorCorreo/{correo}";
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+            String finalUrl = builder.buildAndExpand(username).toUriString();
+            Map<String, String> headersCorreo = Map.of(HttpHeaders.AUTHORIZATION, header);
+            respuesta = loginClient.sendRequest(finalUrl, HttpMethod.GET, null, headersCorreo);
+
+            if ( respuesta.containsKey("codigo")) {
+
+
+                log.error("Error al consultar el usuario por correo: {}");
+                respuesta.put("mensaje", "Error al consultar el rol del usuario: ");
+                respuesta.put("codigo", HttpStatus.NOT_FOUND.value());
+
+
+                response.getWriter().write(new ObjectMapper().writeValueAsString(respuesta));
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType(TokenJwtConfig.CONTENT_TYPE);
+                return;
+
+
+            }
+            Map<String, Object> rol = (Map<String, Object>) respuesta.get("rol");
+            String codigoRol = (String) rol.get("nombre");
+            procesarPorRol(codigoRol);
+
+
             log.info("Realizando login para el usuario: {}", username);
             String loginUrl = this.urlUsuarios + "/login";
 
@@ -99,7 +140,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
                 Object statusCode = respuesta.get("codigo");
                 if (statusCode instanceof Integer && (Integer) statusCode == 200) {
-                    // Obtener roles del JWT
+
                     String authoritiesJson = decodedJWT.getClaim("authorities").asString();
                     Collection<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -171,6 +212,23 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         Date currentDate = new Date();
         return exp.before(currentDate);
     }
+
+    public void procesarPorRol(String rol) {
+        try {
+            RolUsuario rolUsuario = RolUsuario.valueOf(rol);
+
+            switch (rolUsuario) {
+                case ADMIN -> password = passwordAdmin;
+                case PROP -> password = passwordProp;
+                case EMP -> password = passwordEmp;
+                case CLI ->password = passwordCli;
+            }
+
+        } catch (IllegalArgumentException e) {
+            log.error("Rol inválido: " + rol + " - " + e.getMessage());
+        }
+    }
+
 
 
 

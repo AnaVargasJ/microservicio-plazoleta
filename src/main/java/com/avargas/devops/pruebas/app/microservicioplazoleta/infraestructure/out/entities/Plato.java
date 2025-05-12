@@ -39,5 +39,6 @@ public class Plato implements Serializable {
 
     private String urlImagen;
 
+
     private Boolean activo;
 }

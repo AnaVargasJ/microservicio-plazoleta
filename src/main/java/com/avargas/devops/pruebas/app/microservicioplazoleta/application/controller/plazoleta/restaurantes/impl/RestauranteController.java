@@ -1,6 +1,6 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.application.controller.plazoleta.impl;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.application.controller.plazoleta.restaurantes.impl;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.application.controller.plazoleta.IRestauranteController;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.controller.plazoleta.restaurantes.IRestauranteController;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.restaurante.IRestauranteService;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.RestauranteDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.validation.ValidationService;
@@ -13,9 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +32,7 @@ public class RestauranteController implements IRestauranteController {
 
     private final ValidationService validationService;
     @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/crearRestaurante")
     @Operation(
             summary = "Crear Restaurante",

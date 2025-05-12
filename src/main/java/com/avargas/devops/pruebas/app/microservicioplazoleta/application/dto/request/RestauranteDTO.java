@@ -19,8 +19,6 @@ public class RestauranteDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-
     @NombreValido
     @Pattern(regexp = "^(?!\\d+$).*$", message = "El nombre no puede ser solo números")
     @Schema(description = "Nombre del restaurante. Puede contener números, pero no solo números", example = "Restaurante 123", type = "string")
