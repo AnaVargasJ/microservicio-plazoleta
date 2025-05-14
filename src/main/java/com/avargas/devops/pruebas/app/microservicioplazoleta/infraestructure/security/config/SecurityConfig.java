@@ -1,6 +1,6 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.config;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.GenericHttpClient;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.auth.JwtValidationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.ApplicationContext;
@@ -38,14 +39,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, ApplicationContext context) throws Exception {
         HttpSecurity security = http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll()  // Ajusta según tus rutas públicas
-                        .anyRequest().authenticated()
+                        .requestMatchers("/public/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // Solo agrega el filtro si está registrado (en perfil !test)
         if (context.containsBean("jwtValidationFilter")) {
             JwtValidationFilter filter = context.getBean(JwtValidationFilter.class);
             security.addFilter(filter);

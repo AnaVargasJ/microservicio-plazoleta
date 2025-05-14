@@ -1,7 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.RestauranteDTO;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.restaurante.impl.RestauranteService;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.restaurante.impl.RestauranteHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.restaurantes.RestauranteRepository;
 import com.github.tomakehurst.wiremock.http.Fault;
 import org.junit.jupiter.api.*;
@@ -35,7 +35,7 @@ class MicroservicioPlazoletaApplicationTests {
     private RestauranteRepository restauranteRepository;
 
     @Autowired
-    private RestauranteService restauranteService;
+    private RestauranteHandler restauranteService;
 
     @Value("${microserviciopropietarios}")
     private String urlPropietarios;

@@ -1,7 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.restaurantes;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.Restaurante;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.RestauranteEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
+public interface RestauranteRepository extends JpaRepository<RestauranteEntity, Long> {
 }

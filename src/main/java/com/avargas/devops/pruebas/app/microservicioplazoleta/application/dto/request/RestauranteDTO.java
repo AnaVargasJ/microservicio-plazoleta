@@ -1,15 +1,11 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.NitValido;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.NombreValido;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.validator.TelefonoValido;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.FieldIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 @Data
 @NoArgsConstructor
@@ -19,34 +15,29 @@ public class RestauranteDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-
-    @NombreValido
-    @Pattern(regexp = "^(?!\\d+$).*$", message = "El nombre no puede ser solo números")
-    @Schema(description = "Nombre del restaurante. Puede contener números, pero no solo números", example = "Restaurante 123", type = "string")
+    @Schema(description = "Nombre del usuario. Puede contener números, pero no solo números", example = "Juan 123")
     private String nombre;
 
-    @NotBlank
+
     @Schema(description = "Dirección del restaurante", example = "Calle 123 #45-67", type = "string")
     private String direccion;
 
-    @NotBlank
-    @Email
-    @FieldIgnore
+
     @Schema(description = "Correo electrónico del usuario", example = "usuario@correo.com", type = "string", format = "email")
     private String correo;
 
-    @NitValido
-    @Pattern(regexp = "^[0-9]+$", message = "El NIT debe ser numérico")
     @Schema(description = "NIT del restaurante, solo números", example = "9012345678", type = "string")
     private String nit;
 
-    @TelefonoValido
-    @Pattern(regexp = "^\\+?[0-9]{1,13}$", message = "El teléfono debe ser numérico, máximo 13 caracteres y puede iniciar con +")
-    @Schema(description = "Teléfono del restaurante, puede iniciar con +, máximo 13 caracteres", example = "+573005698325", type = "string", maxLength = 13)
+
+    @Schema(description = "Teléfono del restaurante, puede iniciar con +, máximo 13 caracteres",
+            example = "+573005698325",
+            type = "string",
+            maxLength = 13,
+            pattern = "^\\+?[0-9]{1,13}$")
     private String telefono;
 
-    @NotBlank
+
     @Schema(description = "URL del logo del restaurante", example = "https://miapp.com/logo.png", type = "string", format = "uri")
     private String urlLogo;
 }

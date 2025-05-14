@@ -3,8 +3,11 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.se
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.GenericHttpClient;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -32,7 +35,7 @@ import java.util.*;
 @Slf4j
 public class JwtValidationFilter extends BasicAuthenticationFilter {
 
-    private final GenericHttpClient loginClient;
+    private final IGenericHttpClient loginClient;
 
     @Value("${default.password}")
     private String password;
@@ -41,15 +44,17 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
     private String urlUsuarios;
 
 
-
     public JwtValidationFilter(AuthenticationManager authenticationManager, GenericHttpClient loginClient) {
         super(authenticationManager);
         this.loginClient = loginClient;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ResponseDTO responseDTO = new ResponseDTO();
         Map<String, Object> body = new HashMap<>();
         Map<String, Object> respuesta = new HashMap<>();
+
         try {
             String header = request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION);
 
@@ -64,13 +69,12 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
             if (isTokenExpired(exp)) {
 
-                body.put("error", "El token ha vencido");
-                body.put("mensaje", "El token JWT es incorrecto");
-                body.put("status", HttpStatus.UNAUTHORIZED.value());
+                responseDTO = ResponseUtil.error("El token JWT es incorrecto",
+                        Map.of("error", "El token ha vencido"),
+                        HttpStatus.UNAUTHORIZED.value());
 
 
-
-                response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+                response.getWriter().write(new ObjectMapper().writeValueAsString(responseDTO));
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(TokenJwtConfig.CONTENT_TYPE);
                 return;
@@ -90,16 +94,13 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             Map<String, String> headers = Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
 
-
             respuesta = loginClient.sendRequest(loginUrl, HttpMethod.POST, body, headers);
 
             log.info("Respuesta del login: {}", respuesta);
 
             if (respuesta != null && !respuesta.isEmpty()) {
-
                 Object statusCode = respuesta.get("codigo");
                 if (statusCode instanceof Integer && (Integer) statusCode == 200) {
-                    // Obtener roles del JWT
                     String authoritiesJson = decodedJWT.getClaim("authorities").asString();
                     Collection<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -110,60 +111,49 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
                             for (Map<String, String> authorityMap : parsedAuthorities) {
                                 String role = authorityMap.get("authority");
                                 if (role != null) {
-                                    authorities.add(new SimpleGrantedAuthority( role));
+                                    authorities.add(new SimpleGrantedAuthority(role));
                                 }
                             }
                         } catch (Exception ex) {
                             log.error("Error al parsear los authorities del token JWT: {}", ex.getMessage());
                         }
                     }
-
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     chain.doFilter(request, response);
-                }
-                else {
+                } else {
                     throw new RuntimeException("El token no está presente en la respuesta.");
                 }
-
             } else {
                 log.error("Error en la validación del token, código de respuesta: {}", respuesta != null && !respuesta.isEmpty() ? respuesta.get("statusCode") : "null");
 
+                responseDTO = ResponseUtil.error("El token JWT es incorrecto",
+                        Map.of("error", "Error al validar el token"),
+                        HttpStatus.UNAUTHORIZED.value());
 
-                respuesta.put("error", "Error al validar el token");
-                respuesta.put("mensaje","El token JWT es incorrecto");
-                respuesta.put("statusCode",HttpStatus.UNAUTHORIZED.value());
-
-
-                response.getWriter().write(new ObjectMapper().writeValueAsString(respuesta));
+                response.getWriter().write(new ObjectMapper().writeValueAsString(responseDTO));
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(TokenJwtConfig.CONTENT_TYPE);
             }
-
         } catch (JwtException e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());
 
-            respuesta.put("error", e.getMessage());
-            respuesta.put("mensaje", "El token JWT es incorrecto");
-            respuesta.put("statusCode",HttpStatus.UNAUTHORIZED.value());
+            responseDTO = ResponseUtil.error("El token JWT es incorrecto",
+                    Map.of("error", e.getMessage()),
+                    HttpStatus.UNAUTHORIZED.value());
 
-
-
-            response.getWriter().write(new ObjectMapper().writeValueAsString(respuesta));
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseDTO));
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(TokenJwtConfig.CONTENT_TYPE);
         } catch (Exception e) {
             log.error("Error inesperado al validar el token: {}", e.getMessage());
 
+            responseDTO = ResponseUtil.error("Error al validar el token",
+                    Map.of("error", "Error al realizar la autenticación: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR.value());
             respuesta.put("error", "Error al realizar la autenticación: " + e.getMessage());
             respuesta.put("mensaje", "Error al validar el token");
-            respuesta.put("statusCode",HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-
-
-            response.getWriter().write(new ObjectMapper().writeValueAsString(respuesta));
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setContentType(TokenJwtConfig.CONTENT_TYPE);
+            respuesta.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -171,7 +161,6 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         Date currentDate = new Date();
         return exp.before(currentDate);
     }
-
 
 
 }
