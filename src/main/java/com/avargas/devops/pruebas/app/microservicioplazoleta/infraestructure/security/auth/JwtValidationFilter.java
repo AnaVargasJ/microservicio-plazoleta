@@ -96,21 +96,24 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             String finalUrl = builder.buildAndExpand(username).toUriString();
             Map<String, String> headersCorreo = Map.of(HttpHeaders.AUTHORIZATION, header);
             respuesta = loginClient.sendRequest(finalUrl, HttpMethod.GET, null, headersCorreo);
+            Object codigo = respuesta.get("codigo");
 
-            if ( respuesta.containsKey("codigo")) {
+            if (codigo instanceof Number && ((Number) codigo).intValue() != 200) {
 
+                log.error("Error al consultar el usuario por correo");
 
-                log.error("Error al consultar el usuario por correo: {}");
+                body.put("error", "Error al consultar el usuario por correo");
 
-                response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseUtil.error("Error al consultar el rol del usuario: ",
-                        HttpStatus.NOT_FOUND.value())));
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(TokenJwtConfig.CONTENT_TYPE);
+                response.getWriter().write(new ObjectMapper().writeValueAsString(
+                        ResponseUtil.error("Error al consultar el rol del usuario", body, HttpStatus.UNAUTHORIZED.value())
+                ));
                 return;
-
-
             }
-            Map<String, Object> rol = (Map<String, Object>) respuesta.get("rol");
+
+            Map<String, Object> respestaRol = (Map<String, Object>) respuesta.get("respuesta");
+            Map<String, Object> rol = (Map<String, Object>) respestaRol.get("rol");
             String codigoRol = (String) rol.get("nombre");
             procesarPorRol(codigoRol);
 
