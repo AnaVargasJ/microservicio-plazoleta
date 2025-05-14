@@ -4,5 +4,5 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface UsuarioServicePort {
 
-    Boolean usuarioEsPropietario(String correo,  HttpServletRequest request);
+    Long usuarioEsPropietario(String correo,  HttpServletRequest request);
 }

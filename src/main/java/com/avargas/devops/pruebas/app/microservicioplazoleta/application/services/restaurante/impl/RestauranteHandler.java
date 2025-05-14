@@ -30,10 +30,8 @@ public class RestauranteHandler implements IRestauranteHandler {
     public void crearRestaurante(HttpServletRequest request, RestauranteDTO restauranteDTO) {
         RestauranteModel restauranteModel = restauranteRequestMapper.toModel(restauranteDTO);
 
-        Boolean esPropietario = servicePort.usuarioEsPropietario(restauranteDTO.getCorreo(), request);
-        if (!esPropietario) {
-            throw new RolNoAutorizadoException("Rol no autorizado");
-        }
+        Long esPropietario = servicePort.usuarioEsPropietario(restauranteDTO.getCorreo(), request);
+        restauranteModel.setIdPropietario(esPropietario);
 
         restauranteServicePort.crearRestaurante(restauranteModel);
     }

@@ -1,6 +1,8 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.config;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.CustomAccessDeniedHandler;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.CustomAuthenticationEntryPoint;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.auth.JwtValidationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,18 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
     private final GenericHttpClient genericHttpClient;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private static final String[] WHITE_LIST_URL = {
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/configuration/**",
+            "/public/**"
+    };
 
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
@@ -41,9 +55,12 @@ public class SecurityConfig {
         HttpSecurity security = http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         if (context.containsBean("jwtValidationFilter")) {

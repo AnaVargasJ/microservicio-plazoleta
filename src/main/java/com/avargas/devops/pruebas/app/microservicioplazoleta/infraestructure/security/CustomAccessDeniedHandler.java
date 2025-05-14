@@ -1,5 +1,6 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,9 +23,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "Acceso denegado: No tiene permisos para realizar esta operación");
-        errorResponse.put("codigo", HttpStatus.FORBIDDEN.value());
         errorResponse.put("ruta", request.getRequestURI());
 
-        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseUtil.error("Acceso denegado: No tiene permisos para realizar esta operación",
+                errorResponse,
+                HttpStatus.FORBIDDEN.value())));
     }
 }

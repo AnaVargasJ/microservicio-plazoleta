@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.UsuarioServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
     private String urlPropietarios;
 
     @Override
-    public Boolean usuarioEsPropietario(String correo, HttpServletRequest request) {
+  public   Long  usuarioEsPropietario(String correo, HttpServletRequest request) {
         String  token = "Bearer " + request.getHeader("Authorization");
         String url = this.urlPropietarios + "/buscarPorCorreo/{correo}";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
@@ -31,24 +32,37 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
         Map<String, Object> response = genericHttpClient.sendRequest(finalUrl, HttpMethod.GET, null, headers);
 
         if (response == null || !response.containsKey("respuesta")) {
-            return Boolean.FALSE;
+            throw new ValidacionNegocioException("No se pudo obtener la información del usuario propietario.");
         }
 
         Object respuestaObj = response.get("respuesta");
         if (!(respuestaObj instanceof Map)) {
-            return Boolean.FALSE;
+            throw new ValidacionNegocioException("La respuesta del servicio de usuarios es inválida.");
         }
 
         Map<?, ?> respuesta = (Map<?, ?>) respuestaObj;
         Object rolObj = respuesta.get("rol");
 
         if (!(rolObj instanceof Map)) {
-            return Boolean.FALSE;
+            throw new ValidacionNegocioException("El usuario no tiene rol de propietario.");
         }
+
 
         Map<?, ?> rol = (Map<?, ?>) rolObj;
         Object nombreRol = rol.get("nombre");
 
-        return nombreRol != null && "PROP".equalsIgnoreCase(nombreRol.toString());
+        if (nombreRol == null) {
+            throw new ValidacionNegocioException("El rol del usuario no está disponible.");
+        }
+
+        String rolStr = nombreRol.toString().toUpperCase();
+        if(rolStr.equals("PROP")) {
+            Object idUsuario = respuesta.get("idUsuario");
+            if (!(idUsuario instanceof Number)) {
+                throw new ValidacionNegocioException("No se pudo obtener el ID del propietario.");
+            }
+            return ((Number) idUsuario).longValue();
+        }
+        throw new ValidacionNegocioException("El rol '" + rolStr + "' no tiene permitido crear solicitudes.");
     }
 }
