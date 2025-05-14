@@ -7,5 +7,5 @@ import org.springframework.validation.BindingResult;
 
 public interface IRestauranteController {
 
-    ResponseEntity<?> crearRestaurante(HttpServletRequest request, RestauranteDTO restauranteDTO, BindingResult result );
+    ResponseEntity<?> crearRestaurante(HttpServletRequest request, RestauranteDTO restauranteDTO);
 }

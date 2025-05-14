@@ -64,8 +64,7 @@ public class RestauranteController implements IRestauranteController {
     })
     public ResponseEntity<?> crearRestaurante(HttpServletRequest request,
                                               @Parameter(description = "Datos del restaurante", required = true, content = @Content(schema = @Schema(implementation = RestauranteDTO.class)))
-                                               @RequestBody RestauranteDTO restauranteDTO,
-                                               BindingResult result ) {
+                                               @RequestBody RestauranteDTO restauranteDTO) {
 
 
          restauranteService.crearRestaurante(request, restauranteDTO);
