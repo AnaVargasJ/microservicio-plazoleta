@@ -5,6 +5,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.Restau
 public interface RestaurantePersistencePort {
 
     RestauranteModel guardar(RestauranteModel restauranteModel);
+    RestauranteModel getRestauranteModelById(Long id);
 
 
 }

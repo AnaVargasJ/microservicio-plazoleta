@@ -6,5 +6,7 @@ public interface RestauranteServicePort {
 
     void crearRestaurante(RestauranteModel restauranteModel);
 
+    RestauranteModel getRestauranteModelById(Long id);
+
 
 }

@@ -7,6 +7,9 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.restaurantes.RestauranteRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+import java.util.OptionalInt;
+
 @RequiredArgsConstructor
 public class RestauranteJpaAdapter implements RestaurantePersistencePort {
 
@@ -17,5 +20,11 @@ public class RestauranteJpaAdapter implements RestaurantePersistencePort {
     public RestauranteModel guardar(RestauranteModel restauranteModel) {
         RestauranteEntity restauranteEntity = restauranteRepository.save(entityMapper.toRestauranteEntity(restauranteModel));
         return entityMapper.toRestauranteModel(restauranteEntity);
+    }
+
+    @Override
+    public RestauranteModel getRestauranteModelById(Long id) {
+        Optional<RestauranteEntity> filtrarPorId = restauranteRepository.findById(id);
+        return filtrarPorId.map(entityMapper::toRestauranteModel).orElseGet(null);
     }
 }

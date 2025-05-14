@@ -1,5 +1,6 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.RestauranteDataException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.RestaurantePersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
@@ -15,6 +16,16 @@ public class RestauranteUseCase implements RestauranteServicePort {
 
         validarCampos(restauranteModel);
         persistencePort.guardar(restauranteModel);
+    }
+
+    @Override
+    public RestauranteModel getRestauranteModelById(Long id) {
+        RestauranteModel restauranteModel = persistencePort.getRestauranteModelById(id);
+        if (restauranteModel == null) {
+            throw new RestauranteDataException("No existe restaurante con el " + id);
+        }
+        return restauranteModel;
+
     }
 
     private void validarCampos(RestauranteModel restauranteModel) {

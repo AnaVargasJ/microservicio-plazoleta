@@ -23,8 +23,8 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
     private String urlPropietarios;
 
     @Override
-  public   Long  usuarioEsPropietario(String correo, HttpServletRequest request) {
-        String  token = "Bearer " + request.getHeader("Authorization");
+    public Long usuarioEsPropietario(String correo, HttpServletRequest request) {
+        String token = "Bearer " + request.getHeader("Authorization");
         String url = this.urlPropietarios + "/buscarPorCorreo/{correo}";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
@@ -56,7 +56,7 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
         }
 
         String rolStr = nombreRol.toString().toUpperCase();
-        if(rolStr.equals("PROP")) {
+        if (rolStr.equals("PROP")) {
             Object idUsuario = respuesta.get("idUsuario");
             if (!(idUsuario instanceof Number)) {
                 throw new ValidacionNegocioException("No se pudo obtener el ID del propietario.");
