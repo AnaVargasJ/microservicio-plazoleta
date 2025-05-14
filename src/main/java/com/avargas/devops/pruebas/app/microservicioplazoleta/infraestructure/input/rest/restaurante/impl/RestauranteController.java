@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,7 @@ public class RestauranteController implements IRestauranteController {
 
     @Override
     @PostMapping("/crearRestaurante")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Crear Restaurante",
             description = "Crear un nuevo restaurante en la base de datos con el rol usuario Administrador")
