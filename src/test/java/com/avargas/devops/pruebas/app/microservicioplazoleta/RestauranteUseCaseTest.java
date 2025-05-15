@@ -1,10 +1,10 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.RestauranteDataException;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.RestauranteDataException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.RestaurantePersistencePort;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.RestauranteUseCase;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante.RestauranteUseCase;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

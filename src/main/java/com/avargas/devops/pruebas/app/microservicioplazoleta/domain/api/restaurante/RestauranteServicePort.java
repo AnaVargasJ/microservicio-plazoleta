@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 

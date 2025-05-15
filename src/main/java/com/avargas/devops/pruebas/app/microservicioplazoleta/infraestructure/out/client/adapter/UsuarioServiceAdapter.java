@@ -1,7 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.UsuarioServicePort;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.UsuarioServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

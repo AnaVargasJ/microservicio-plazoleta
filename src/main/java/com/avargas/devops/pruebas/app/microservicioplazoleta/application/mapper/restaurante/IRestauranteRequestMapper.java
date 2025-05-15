@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.restaurante;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.RestauranteDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;

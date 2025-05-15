@@ -21,5 +21,5 @@ public class RestauranteModel {
     private String telefono;
     private String urlLogo;
     private String nit;
-    private List<PlatoModel> platoModels = new ArrayList<>();;
+    private List<PlatoModel> platoModels = new ArrayList<>();
 }

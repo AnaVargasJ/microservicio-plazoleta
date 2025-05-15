@@ -1,6 +1,6 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.restaurante;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.RestaurantePersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.RestauranteEntity;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.restaurantes.IRestauranteEntityMapper;
@@ -8,7 +8,6 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @RequiredArgsConstructor
 public class RestauranteJpaAdapter implements RestaurantePersistencePort {

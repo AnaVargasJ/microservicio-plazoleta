@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 
@@ -6,6 +6,5 @@ public interface RestaurantePersistencePort {
 
     RestauranteModel guardar(RestauranteModel restauranteModel);
     RestauranteModel getRestauranteModelById(Long id);
-
 
 }

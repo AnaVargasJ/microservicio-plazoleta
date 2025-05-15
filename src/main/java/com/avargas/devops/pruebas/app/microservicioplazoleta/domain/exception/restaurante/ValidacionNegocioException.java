@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante;
 
 public class ValidacionNegocioException extends RuntimeException{
 

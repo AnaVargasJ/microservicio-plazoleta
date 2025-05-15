@@ -1,10 +1,11 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.controllerAdvisor;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.controllerAdvisor.restaurantes;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.exception.RolNoAutorizadoException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @ControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+public class RestauranteExceptionHandlerAdvice {
 
     @ExceptionHandler(ValidacionNegocioException.class)
     public ResponseEntity<ResponseDTO> handleValidacionNegocioException(ValidacionNegocioException ex) {
@@ -47,6 +48,21 @@ public class GlobalExceptionHandler {
                 HttpStatus.FORBIDDEN.value()
         );
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ResponseDTO> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.error("Violación de integridad de datos: {}", ex.getMessage());
+
+        String mensaje = "Error al guardar el plato: hay campos obligatorios que no fueron proporcionados (por ejemplo, categoría o restaurante).";
+
+        ResponseDTO response = ResponseUtil.error(
+                mensaje,
+                Map.of("error", ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage()),
+                HttpStatus.BAD_REQUEST.value()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

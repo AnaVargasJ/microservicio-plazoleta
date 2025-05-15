@@ -1,10 +1,10 @@
-package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase;
+package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.RestauranteDataException;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.RestaurantePersistencePort;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.RestauranteDataException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.RestauranteServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.RestauranteServicePort;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
