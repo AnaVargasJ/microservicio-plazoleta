@@ -27,6 +27,21 @@ public class PlatoUseCase implements IPlatoServicePort {
         return platoModel;
     }
 
+    @Override
+    public void modificarPlato(Long id, PlatoModel platoActualizado) {
+        PlatoModel platoExistente = getPlatoModelById(id);
+        platoExistente.setDescripcion(platoActualizado.getDescripcion() != null
+                        ? platoActualizado.getDescripcion()
+                        : platoExistente.getDescripcion()
+        );
+
+        platoExistente.setPrecio(platoActualizado.getPrecio() != null
+                        ? platoActualizado.getPrecio()
+                        : platoExistente.getPrecio()
+        );
+        persistencePort.updatePlatoDescripcionPrecio(id,platoExistente.getDescripcion(), platoActualizado.getPrecio());
+    }
+
     private void validar(PlatoModel plato) {
         if (plato == null) {
             throw new PlatoInvalidoException("El plato no puede ser nulo.");

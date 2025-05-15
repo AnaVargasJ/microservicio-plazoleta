@@ -189,4 +189,57 @@ class PlatoUseCaseTest {
         PlatoDataException ex = assertThrows(PlatoDataException.class, () -> platoUseCase.getPlatoModelById(99L));
         assertEquals("No existe  plato con el 99", ex.getMessage());
     }
+
+    @Test
+    @Order(9)
+    void modificarPlato_actualizaDescripcionYPrecio() {
+        Long id = 1L;
+        PlatoModel existente = PlatoModel.builder()
+                .id(id)
+                .nombre("Plato")
+                .descripcion("Antigua")
+                .precio(BigDecimal.TEN)
+                .build();
+
+        PlatoModel actualizado = PlatoModel.builder()
+                .id(id)
+                .nombre("Plato")
+                .descripcion("Nueva")
+                .precio(BigDecimal.valueOf(20))
+                .build();
+
+        when(platoPersistencePort.getPlatoModelById(id)).thenReturn(existente);
+
+        platoUseCase.modificarPlato(id, actualizado);
+
+        assertEquals("Nueva", existente.getDescripcion());
+        assertEquals(BigDecimal.valueOf(20), existente.getPrecio());
+        verify(platoPersistencePort).updatePlatoDescripcionPrecio(id, "Nueva", BigDecimal.valueOf(20));
+    }
+
+    @Test
+    void modificarPlato_descripcionNull_precioNoNull() {
+        Long id = 1L;
+        PlatoModel existente = PlatoModel.builder()
+                .id(id)
+                .nombre("Plato")
+                .descripcion("Antigua")
+                .precio(BigDecimal.TEN)
+                .build();
+
+        PlatoModel actualizado = PlatoModel.builder()
+                .id(id)
+                .nombre("Plato")
+                .descripcion("Nueva")
+                .precio(null)
+                .build();
+
+        when(platoPersistencePort.getPlatoModelById(id)).thenReturn(existente);
+
+        platoUseCase.modificarPlato(id, actualizado);
+
+        assertEquals("Nueva", existente.getDescripcion());
+        assertEquals(BigDecimal.valueOf(10), existente.getPrecio());
+        verify(platoPersistencePort).updatePlatoDescripcionPrecio(id, "Nueva", null);
+    }
 }

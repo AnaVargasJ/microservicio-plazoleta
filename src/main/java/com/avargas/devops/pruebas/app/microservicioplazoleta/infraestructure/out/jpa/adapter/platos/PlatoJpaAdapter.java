@@ -9,6 +9,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.platos.PlatoRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,6 +42,12 @@ public class PlatoJpaAdapter  implements PlatoPersistencePort {
     public PlatoModel getPlatoModelById(Long id) {
       Optional<PlatoEntity> filtrarPorId = platoRepository.findById(id);
       return filtrarPorId.map(entityMapper::toPlatoModel).orElseGet(null);
+    }
+
+    @Override
+    public PlatoModel updatePlatoDescripcionPrecio(Long id, String descripcion, BigDecimal Precio) {
+        int filasActualizadas = platoRepository.actualizarDescripcionYPrecio(id, descripcion, Precio);
+        return getPlatoModelById(id);
     }
 
 }
