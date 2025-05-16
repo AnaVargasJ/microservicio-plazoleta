@@ -1,6 +1,8 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.platos;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.PlatoEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,7 +43,7 @@ public interface PlatoRepository extends JpaRepository<PlatoEntity, Long> {
     Boolean existsPlatoOwnedByUsuario(@Param("idPlato") Long idPlato, @Param("idUsuario") Long idUsuario);
 
 
-
+    Page<PlatoEntity> findByRestauranteEntityIdAndCategoriaEntityIdAndActivoTrue(Long idRestaurante, Long idCategoria, Pageable pageable);
 
 
 }

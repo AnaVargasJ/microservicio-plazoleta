@@ -8,6 +8,9 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.platos.IPlatoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.platos.PlatoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -60,6 +63,17 @@ public class PlatoJpaAdapter  implements PlatoPersistencePort {
     public Boolean validarPropietarioDelPlato(Long idPlato, Long idUsuario) {
         return platoRepository.existsPlatoOwnedByUsuario(idPlato, idUsuario);
     }
+
+    @Override
+    public Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<PlatoEntity> platosPaginados = platoRepository
+                .findByRestauranteEntityIdAndCategoriaEntityIdAndActivoTrue(idRestaurante, idCategoria, pageable);
+
+        return platosPaginados.map(entityMapper::toPlatoModel);
+    }
+
 
 
 }

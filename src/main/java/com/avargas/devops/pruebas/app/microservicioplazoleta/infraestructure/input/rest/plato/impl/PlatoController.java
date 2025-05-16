@@ -147,4 +147,26 @@ public class PlatoController implements IPlatoController {
                         .build()
         );
     }
+
+    @Override
+    @PreAuthorize("hasRole('ROLE_CLI')")
+    @Operation(
+            summary = "Listar platos por categoria",
+            description = "Retorna un listado de platos por menu de restaurantes"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de platos obtenida correctamente",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content)
+    })
+    @GetMapping("/{idRestaurante}/platos")
+    public ResponseEntity<?> listarPlatosRestaurante(HttpServletRequest request,@PathVariable Long idRestaurante, @RequestParam(required = false) Long idCategoria, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(
+                ResponseUtil.success("Restaurantes listados correctamente", platoService.listarPlatosRestaurante(idRestaurante, idCategoria, page, size)));
+    }
 }

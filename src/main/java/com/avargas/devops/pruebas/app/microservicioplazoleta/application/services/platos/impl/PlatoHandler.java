@@ -2,7 +2,9 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.application.servic
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PlatoResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoRequestMapper;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoUpdateRequestMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.platos.IPlatoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.categorias.ICategoriaServicePort;
@@ -11,10 +13,11 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaura
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.CategoriaModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.platos.PlatoUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class PlatoHandler implements IPlatoHandler {
     private final ICategoriaServicePort  iCategoriaServicePort;
     private final IPlatoRequestMapper iPlatoRequestMapper;
     private final IPlatoUpdateRequestMapper iPlatoUpdateRequestMapper;
+    private final IPlatoResponseMapper iPlatoResponseMapper;
     @Override
     public void crearPlato(HttpServletRequest request, PlatoDTO platoDTO) {
         PlatoModel platoModel = iPlatoRequestMapper.toModel(platoDTO);
@@ -46,5 +50,15 @@ public class PlatoHandler implements IPlatoHandler {
     public void activarDesactivarPlato(Long id, Boolean activo, Long idPropietario) {
 
         iPlatoServicePort.activarDesactivarPlato(id, activo, idPropietario);
+    }
+
+    @Override
+    public List<PlatoResponseDTO> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+
+        List<PlatoModel> platoModelos = iPlatoServicePort
+                .listarPlatosRestaurante(idRestaurante,idCategoria,page, size)
+                .getContent();
+
+        return  iPlatoResponseMapper.toResponsePlatosModelList(platoModelos);
     }
 }

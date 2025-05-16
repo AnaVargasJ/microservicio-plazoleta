@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 
@@ -15,5 +16,6 @@ public interface PlatoPersistencePort {
 
     Boolean validarPropietarioDelPlato(Long idPlato, Long idUsuario);
 
+    Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) ;
 
 }

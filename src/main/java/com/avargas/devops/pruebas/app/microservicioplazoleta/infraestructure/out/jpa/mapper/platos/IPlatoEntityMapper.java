@@ -7,6 +7,8 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -17,5 +19,6 @@ public interface IPlatoEntityMapper {
 
     PlatoEntity toPlatoEntity(PlatoModel plato);
     PlatoModel toPlatoModel(PlatoEntity platoEntity);
+    List<PlatoModel> toPlatoModelList(List<PlatoEntity> platoEntityList);
 }
 

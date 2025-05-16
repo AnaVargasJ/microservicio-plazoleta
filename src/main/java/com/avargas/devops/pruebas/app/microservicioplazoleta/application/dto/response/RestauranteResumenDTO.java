@@ -1,7 +1,6 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 

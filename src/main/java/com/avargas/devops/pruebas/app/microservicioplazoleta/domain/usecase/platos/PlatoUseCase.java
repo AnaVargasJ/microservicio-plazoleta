@@ -6,6 +6,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pl
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 
@@ -48,6 +49,11 @@ public class PlatoUseCase implements IPlatoServicePort {
         if (!persistencePort.validarPropietarioDelPlato(id, idPropietario))
             throw new PlatoInvalidoException("Solo el propietario puede habilitar/deshabilitar platos.");
         persistencePort.activarDesactivarPlato(id, activo);
+    }
+
+    @Override
+    public Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+        return persistencePort.listarPlatosRestaurante(idRestaurante, idCategoria, page,size);
     }
 
     private void validar(PlatoModel plato) {
