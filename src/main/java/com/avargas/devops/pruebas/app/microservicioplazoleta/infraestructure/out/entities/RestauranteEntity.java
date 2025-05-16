@@ -1,10 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,5 +35,6 @@ public class RestauranteEntity implements Serializable {
     private String nit;
 
     @OneToMany(mappedBy = "restauranteEntity", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<PlatoEntity> platoEntities = new ArrayList<>();
 }

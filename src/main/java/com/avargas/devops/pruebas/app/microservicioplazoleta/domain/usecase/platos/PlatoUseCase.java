@@ -42,6 +42,14 @@ public class PlatoUseCase implements IPlatoServicePort {
         persistencePort.updatePlatoDescripcionPrecio(id,platoExistente.getDescripcion(), platoActualizado.getPrecio());
     }
 
+    @Override
+    public void activarDesactivarPlato(Long id, Boolean activo, Long idPropietario) {
+      getPlatoModelById(id);
+        if (!persistencePort.validarPropietarioDelPlato(id, idPropietario))
+            throw new PlatoInvalidoException("Solo el propietario puede habilitar/deshabilitar platos.");
+        persistencePort.activarDesactivarPlato(id, activo);
+    }
+
     private void validar(PlatoModel plato) {
         if (plato == null) {
             throw new PlatoInvalidoException("El plato no puede ser nulo.");

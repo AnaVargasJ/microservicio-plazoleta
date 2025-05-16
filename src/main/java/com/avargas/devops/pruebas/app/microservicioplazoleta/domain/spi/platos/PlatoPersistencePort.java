@@ -11,5 +11,9 @@ public interface PlatoPersistencePort {
 
     PlatoModel updatePlatoDescripcionPrecio(Long id, String descripcion, BigDecimal Precio);
 
+    PlatoModel activarDesactivarPlato(Long id, Boolean activo);
+
+    Boolean validarPropietarioDelPlato(Long idPlato, Long idUsuario);
+
 
 }

@@ -11,6 +11,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaura
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.CategoriaModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.platos.PlatoUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,11 @@ public class PlatoHandler implements IPlatoHandler {
     public void modificarPlato(HttpServletRequest request, Long id, PlatoDTOUpdate platoDTOUpdate) {
      PlatoModel platoModel = iPlatoUpdateRequestMapper.toModel(platoDTOUpdate);
      iPlatoServicePort.modificarPlato(id, platoModel);
+    }
+
+    @Override
+    public void activarDesactivarPlato(Long id, Boolean activo, Long idPropietario) {
+
+        iPlatoServicePort.activarDesactivarPlato(id, activo, idPropietario);
     }
 }

@@ -1,10 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -28,6 +25,7 @@ public class PlatoEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "id_categoria", nullable = false)
+    @ToString.Exclude
     private CategoriaEntity categoriaEntity;
 
     private String descripcion;
@@ -35,6 +33,7 @@ public class PlatoEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "id_restaurante", nullable = false)
+    @ToString.Exclude
     private RestauranteEntity restauranteEntity;
 
     private String urlImagen;

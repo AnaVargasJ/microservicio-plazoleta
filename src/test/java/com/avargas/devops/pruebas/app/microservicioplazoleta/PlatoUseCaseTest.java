@@ -20,8 +20,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -242,4 +241,54 @@ class PlatoUseCaseTest {
         assertEquals(BigDecimal.valueOf(10), existente.getPrecio());
         verify(platoPersistencePort).updatePlatoDescripcionPrecio(id, "Nueva", null);
     }
+
+    @Test
+    @Order(10)
+    void activarDesactivarPlato_debeActualizarEstadoCuandoElPropietarioEsValido() {
+
+        Long idPlato = 1L;
+        Long idPropietario = 10L;
+        boolean nuevoEstado = false;
+
+        PlatoModel existente = PlatoModel.builder()
+                .id(idPlato)
+                .nombre("Plato")
+                .activo(true)
+                .build();
+
+        when(platoPersistencePort.getPlatoModelById(idPlato)).thenReturn(existente);
+        when(platoPersistencePort.validarPropietarioDelPlato(idPlato, idPropietario)).thenReturn(true);
+
+
+        platoUseCase.activarDesactivarPlato(idPlato, nuevoEstado, idPropietario);
+
+
+        verify(platoPersistencePort).activarDesactivarPlato(idPlato, nuevoEstado);
+    }
+
+    @Test
+    @Order(11)
+    void activarDesactivarPlato_debeLanzarExcepcionCuandoElPropietarioNoEsValido() {
+
+        Long idPlato = 1L;
+        Long idPropietario = 999L;
+
+        PlatoModel existente = PlatoModel.builder()
+                .id(idPlato)
+                .nombre("Plato")
+                .activo(true)
+                .build();
+
+        when(platoPersistencePort.getPlatoModelById(idPlato)).thenReturn(existente);
+        when(platoPersistencePort.validarPropietarioDelPlato(idPlato, idPropietario)).thenReturn(false);
+
+
+        assertThrows(PlatoInvalidoException.class, () ->
+                platoUseCase.activarDesactivarPlato(idPlato, false, idPropietario)
+        );
+
+        verify(platoPersistencePort, never()).activarDesactivarPlato(anyLong(), anyBoolean());
+    }
+
+
 }

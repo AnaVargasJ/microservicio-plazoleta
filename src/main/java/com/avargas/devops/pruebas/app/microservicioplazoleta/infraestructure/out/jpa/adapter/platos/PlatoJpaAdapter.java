@@ -41,7 +41,7 @@ public class PlatoJpaAdapter  implements PlatoPersistencePort {
     @Override
     public PlatoModel getPlatoModelById(Long id) {
       Optional<PlatoEntity> filtrarPorId = platoRepository.findById(id);
-      return filtrarPorId.map(entityMapper::toPlatoModel).orElseGet(null);
+      return filtrarPorId.map(entityMapper::toPlatoModel).orElse(new PlatoModel());
     }
 
     @Override
@@ -49,5 +49,17 @@ public class PlatoJpaAdapter  implements PlatoPersistencePort {
         int filasActualizadas = platoRepository.actualizarDescripcionYPrecio(id, descripcion, Precio);
         return getPlatoModelById(id);
     }
+
+    @Override
+    public PlatoModel activarDesactivarPlato(Long id, Boolean activo) {
+        int filasActualizadas = platoRepository.activarDesactivarPlato(id, activo);
+        return getPlatoModelById(id);
+    }
+
+    @Override
+    public Boolean validarPropietarioDelPlato(Long idPlato, Long idUsuario) {
+        return platoRepository.existsPlatoOwnedByUsuario(idPlato, idUsuario);
+    }
+
 
 }

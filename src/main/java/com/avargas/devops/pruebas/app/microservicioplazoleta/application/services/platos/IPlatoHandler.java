@@ -8,4 +8,6 @@ public interface IPlatoHandler {
     void crearPlato(HttpServletRequest request, PlatoDTO platoDTO);
     void modificarPlato(HttpServletRequest request, Long id, PlatoDTOUpdate platoDTOUpdate);
 
+    void activarDesactivarPlato(Long id, Boolean activo,Long idPropietario);
+
 }

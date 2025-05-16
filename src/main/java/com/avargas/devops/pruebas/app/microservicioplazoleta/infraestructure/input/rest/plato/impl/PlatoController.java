@@ -5,8 +5,10 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.req
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.platos.IPlatoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.plato.IPlatoController;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -117,10 +120,31 @@ public class PlatoController implements IPlatoController {
                                                     content = @Content(schema = @Schema(implementation = PlatoDTOUpdate.class)))
                                             @RequestBody PlatoDTOUpdate platoDTO) {
 
-
         platoService.modificarPlato(request, id, platoDTO);
         return ResponseEntity.ok(
                 ResponseUtil.success("Plato modificado correctamente", Map.of("idPlato", id))
+        );
+    }
+
+    @Override
+    @PatchMapping("/plato/{id}/estado")
+    @PreAuthorize("hasRole('PROP')")
+    @Operation(summary = "Habilitar o deshabilitar un plato del menú")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estado del plato actualizado correctamente"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: no es propietario del plato"),
+            @ApiResponse(responseCode = "404", description = "Plato no encontrado")
+    })
+    public ResponseEntity<?> cambiarEstadoPlato(@PathVariable Long id, @RequestParam Boolean activo, @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado)
+    {
+
+        platoService.activarDesactivarPlato(id, activo, usuarioAutenticado.getId());
+
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .mensaje("Plato " + (activo ? "habilitado" : "deshabilitado") + " correctamente.")
+                        .codigo(HttpStatus.OK.value())
+                        .build()
         );
     }
 }
