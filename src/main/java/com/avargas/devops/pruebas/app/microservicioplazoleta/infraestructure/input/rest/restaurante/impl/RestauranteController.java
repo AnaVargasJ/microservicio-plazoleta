@@ -17,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -31,14 +28,12 @@ public class RestauranteController implements IRestauranteController {
 
     private final IRestauranteHandler restauranteService;
 
-
     @Override
     @PostMapping("/crearRestaurante")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Crear Restaurante",
             description = "Crear un nuevo restaurante en la base de datos con el rol usuario Administrador")
-
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -64,14 +59,30 @@ public class RestauranteController implements IRestauranteController {
     public ResponseEntity<?> crearRestaurante(HttpServletRequest request,
                                               @Parameter(description = "Datos del restaurante", required = true, content = @Content(schema = @Schema(implementation = RestauranteDTO.class)))
                                                @RequestBody RestauranteDTO restauranteDTO) {
-
-
          restauranteService.crearRestaurante(request, restauranteDTO);
-
-         return new ResponseEntity<>(ResponseUtil.success("Restaurante creado correctamente")
-                 , HttpStatus.CREATED);
+         return new ResponseEntity<>(ResponseUtil.success("Restaurante creado correctamente"),
+                 HttpStatus.CREATED);
     }
 
+    @Override
+    @PreAuthorize("hasRole('ROLE_CLI')")
+    @Operation(
+            summary = "Listar restaurantes disponibles",
+            description = "Retorna un listado paginado y ordenado alfabéticamente de restaurantes con su nombre y URL de logo"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de restaurantes obtenida correctamente",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content)
+    })
+    @GetMapping("/restaurantes")
+    public ResponseEntity<?> listarRestaurantes(HttpServletRequest request,int page, int size) {
 
-
+        return ResponseEntity.ok(
+                ResponseUtil.success("Restaurantes listados correctamente", restauranteService.listarRestaurante( page, size)));
+    }
 }

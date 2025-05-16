@@ -7,4 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface IRestauranteController {
 
     ResponseEntity<?> crearRestaurante(HttpServletRequest request, RestauranteDTO restauranteDTO);
+
+    ResponseEntity<?> listarRestaurantes(HttpServletRequest request,int page, int size);
+
 }

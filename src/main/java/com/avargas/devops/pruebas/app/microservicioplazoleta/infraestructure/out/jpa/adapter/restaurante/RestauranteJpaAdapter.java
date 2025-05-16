@@ -6,6 +6,10 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.restaurantes.IRestauranteEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.restaurantes.RestauranteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Optional;
 
@@ -25,5 +29,20 @@ public class RestauranteJpaAdapter implements RestaurantePersistencePort {
     public RestauranteModel getRestauranteModelById(Long id) {
         Optional<RestauranteEntity> filtrarPorId = restauranteRepository.findById(id);
         return filtrarPorId.map(entityMapper::toRestauranteModel).orElseGet(null);
+    }
+
+    @Override
+    public Page<RestauranteModel> listarRestaurantesPaginados(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by( "nombre"));
+        Page<RestauranteEntity> entidades = restauranteRepository.findAllByOrderByNombre(pageable);
+        return entidades.map(entity -> RestauranteModel.builder()
+                .id(entity.getId())
+                .nombre(entity.getNombre())
+                .direccion(entity.getDireccion())
+                .telefono(entity.getTelefono())
+                .urlLogo(entity.getUrlLogo())
+                .idPropietario(entity.getIdPropietario())
+                .nit(entity.getNit())
+                .build());
     }
 }

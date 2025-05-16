@@ -13,6 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -124,6 +129,30 @@ class RestauranteUseCaseTest {
                 .telefono("+573005698325")
                 .urlLogo("https://miapp.com/logo.png")
                 .build();
+    }
+
+    @Test
+    @Order(8)
+    void listarRestaurantesPaginados_debeRetornarListaPaginada() {
+
+        int page = 0;
+        int size = 2;
+        PageRequest pageable = PageRequest.of(page, size);
+
+        List<RestauranteModel> restaurantes = List.of(
+                crearModeloValido(),
+                crearModeloValido()
+        );
+
+        Page<RestauranteModel> pageResult = new PageImpl<>(restaurantes, pageable, restaurantes.size());
+
+        when(persistencePort.listarRestaurantesPaginados(page, size)).thenReturn(pageResult);
+
+        Page<RestauranteModel> resultado = restauranteUseCase.listarRestaurantesPaginados(page, size);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.getContent().size());
+        verify(persistencePort).listarRestaurantesPaginados(page, size);
     }
 
 }

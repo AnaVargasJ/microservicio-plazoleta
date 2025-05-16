@@ -6,6 +6,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.re
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.RestauranteServicePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @RequiredArgsConstructor
 public class RestauranteUseCase implements RestauranteServicePort {
@@ -28,6 +29,11 @@ public class RestauranteUseCase implements RestauranteServicePort {
 
     }
 
+    @Override
+    public Page<RestauranteModel> listarRestaurantesPaginados(int page, int size) {
+        return persistencePort.listarRestaurantesPaginados(page,size);
+    }
+
     private void validarCampos(RestauranteModel restauranteModel) {
         if (restauranteModel.getNombre() == null || restauranteModel.getNombre().matches("^\\d+$")) {
             throw new ValidacionNegocioException("El nombre no puede ser nulo ni contener solo números.");
@@ -40,7 +46,6 @@ public class RestauranteUseCase implements RestauranteServicePort {
         if (restauranteModel.getTelefono() == null || !restauranteModel.getTelefono().matches("^\\+?\\d{1,13}$")) {
             throw new ValidacionNegocioException("Teléfono inválido. Puede comenzar con '+' y tener hasta 13 caracteres numéricos.");
         }
-
 
     }
 }

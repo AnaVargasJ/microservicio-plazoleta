@@ -10,4 +10,5 @@ public interface IPlatoHandler {
 
     void activarDesactivarPlato(Long id, Boolean activo,Long idPropietario);
 
+
 }
