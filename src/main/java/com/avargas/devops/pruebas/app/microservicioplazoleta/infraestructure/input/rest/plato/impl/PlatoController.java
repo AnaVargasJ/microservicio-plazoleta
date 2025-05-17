@@ -6,9 +6,11 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.res
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.platos.IPlatoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.plato.IPlatoController;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,46 +27,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/plato")
+@RequestMapping(EndpointApi.BASE_PATH_PLATOS)
 @RequiredArgsConstructor
-@Tag(name = "Plato", description = "Aplicación que crea platos para asociarlo a un restaurante")
+@Tag(name = SwaggerConstants.TAG_PLATO, description = SwaggerConstants.TAG_PLATO_DESC)
 public class PlatoController implements IPlatoController {
 
     private final IPlatoHandler platoService;
 
     @Override
-    @PostMapping("/crearPlato")
+    @PostMapping(EndpointApi.CREATE_PLATOS)
     @PreAuthorize("hasRole('ROLE_PROP')")
     @Operation(
-            summary = "Crear Plato",
-            description = "Permite al propietario de un restaurante crear un nuevo plato y asociarlo a una categoría y restaurante."
+            summary = SwaggerConstants.OP_CREAR_PLATO_SUMMARY,
+            description = SwaggerConstants.OP_CREAR_PLATO_DESC
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Plato creado correctamente",
-                    content = @Content(schema = @Schema(implementation = Object.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Error de validación o datos incorrectos (por ejemplo, categoría o restaurante inexistente)",
-                    content = @Content(schema = @Schema(implementation = Object.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Token inválido o no enviado",
-                    content = @Content(schema = @Schema(implementation = Object.class))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Acceso denegado: solo el propietario del restaurante puede crear platos",
-                    content = @Content(schema = @Schema(implementation = Object.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Error interno del servidor al intentar crear el plato",
-                    content = @Content(schema = @Schema(implementation = Object.class))
-            )
+            @ApiResponse(responseCode = SwaggerResponseCode.CREATED, description = SwaggerConstants.RESPONSE_201_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     public ResponseEntity<?> crearPlato(
             HttpServletRequest request,
@@ -74,46 +56,25 @@ public class PlatoController implements IPlatoController {
                     content = @Content(schema = @Schema(implementation = PlatoDTO.class)))
             @RequestBody PlatoDTO platoDTO) {
 
-         platoService.crearPlato(request, platoDTO);
-        return new ResponseEntity<>(ResponseUtil.success("Plato creado correctamente")
-                , HttpStatus.CREATED);
+        platoService.crearPlato(request, platoDTO);
+        return new ResponseEntity<>(ResponseUtil.success("Plato creado correctamente"), HttpStatus.CREATED);
     }
 
     @Override
-    @PutMapping("/modificarPlato/{idPlato}")
+    @PutMapping(EndpointApi.UPDATE_PLATO)
     @PreAuthorize("hasRole('ROLE_PROP')")
     @Operation(
-            summary = "Modificar Plato",
-            description = "Permite al propietario de un restaurante crear modificar un plato con la descripcion o precio"
+            summary = SwaggerConstants.OP_MODIFICAR_PLATO_SUMMARY,
+            description = SwaggerConstants.OP_MODIFICAR_PLATO_DESC
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Se modificó correctamente el plato",
-                    content = @Content(schema = @Schema(implementation = ResponseDTO.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "No se encontro plato asociado al restaurante",
-                    content = @Content(schema = @Schema(implementation = ResponseDTO.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Token inválido o no enviado",
-                    content = @Content(schema = @Schema(implementation = ResponseDTO.class))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Acceso denegado: solo el propietario del restaurante puede crear platos",
-                    content = @Content(schema = @Schema(implementation = ResponseDTO.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Error interno del servidor al intentar modificar el plato",
-                    content = @Content(schema = @Schema(implementation = ResponseDTO.class))
-            )
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<?> modificarPlato(HttpServletRequest request,@PathVariable("idPlato") Long id,
+    public ResponseEntity<?> modificarPlato(HttpServletRequest request, @PathVariable("idPlato") Long id,
                                             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                     description = "Datos del plato a modificar",
                                                     required = true,
@@ -127,17 +88,15 @@ public class PlatoController implements IPlatoController {
     }
 
     @Override
-    @PatchMapping("/plato/{id}/estado")
-    @PreAuthorize("hasRole('PROP')")
-    @Operation(summary = "Habilitar o deshabilitar un plato del menú")
+    @PatchMapping(EndpointApi.DISABLE_PLATO)
+    @PreAuthorize("hasRole('ROLE_PROP')")
+    @Operation(summary = SwaggerConstants.OP_CAMBIAR_ESTADO_PLATO_SUMMARY)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Estado del plato actualizado correctamente"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado: no es propietario del plato"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado")
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC)
     })
-    public ResponseEntity<?> cambiarEstadoPlato(@PathVariable Long id, @RequestParam Boolean activo, @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado)
-    {
-
+    public ResponseEntity<?> cambiarEstadoPlato(@PathVariable Long id, @RequestParam Boolean activo, @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
         platoService.activarDesactivarPlato(id, activo, usuarioAutenticado.getId());
 
         return ResponseEntity.ok(
@@ -149,24 +108,25 @@ public class PlatoController implements IPlatoController {
     }
 
     @Override
+    @GetMapping(EndpointApi.LIST_PLATOS)
     @PreAuthorize("hasRole('ROLE_CLI')")
     @Operation(
-            summary = "Listar platos por categoria",
-            description = "Retorna un listado de platos por menu de restaurantes"
+            summary = SwaggerConstants.OP_LISTAR_PLATOS_SUMMARY,
+            description = SwaggerConstants.OP_LISTAR_PLATOS_DESC
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de platos obtenida correctamente",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Solicitud inválida",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
-                    content = @Content)
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    @GetMapping("/{idRestaurante}/platos")
-    public ResponseEntity<?> listarPlatosRestaurante(HttpServletRequest request,@PathVariable Long idRestaurante, @RequestParam(required = false) Long idCategoria, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> listarPlatosRestaurante(HttpServletRequest request, @PathVariable Long idRestaurante,
+                                                     @RequestParam(required = false) Long idCategoria,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size) {
 
         return ResponseEntity.ok(
-                ResponseUtil.success("Restaurantes listados correctamente", platoService.listarPlatosRestaurante(idRestaurante, idCategoria, page, size)));
+                ResponseUtil.success("Restaurantes listados correctamente",
+                        platoService.listarPlatosRestaurante(idRestaurante, idCategoria, page, size))
+        );
     }
 }
