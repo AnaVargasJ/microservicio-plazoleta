@@ -2,6 +2,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.RestauranteDataException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante.RestauranteUseCase;
@@ -137,22 +138,30 @@ class RestauranteUseCaseTest {
 
         int page = 0;
         int size = 2;
-        PageRequest pageable = PageRequest.of(page, size);
 
         List<RestauranteModel> restaurantes = List.of(
                 crearModeloValido(),
                 crearModeloValido()
         );
 
-        Page<RestauranteModel> pageResult = new PageImpl<>(restaurantes, pageable, restaurantes.size());
+        PageModel<RestauranteModel> pageResult = PageModel.<RestauranteModel>builder()
+                .content(restaurantes)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(2)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
 
         when(persistencePort.listarRestaurantesPaginados(page, size)).thenReturn(pageResult);
 
-        Page<RestauranteModel> resultado = restauranteUseCase.listarRestaurantesPaginados(page, size);
+        PageModel<RestauranteModel> resultado = restauranteUseCase.listarRestaurantesPaginados(page, size);
 
         assertNotNull(resultado);
         assertEquals(2, resultado.getContent().size());
         verify(persistencePort).listarRestaurantesPaginados(page, size);
     }
+
 
 }

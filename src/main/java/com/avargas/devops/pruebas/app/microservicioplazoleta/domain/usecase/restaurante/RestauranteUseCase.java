@@ -1,12 +1,13 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.RestauranteDataException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.RestauranteServicePort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+
 
 @RequiredArgsConstructor
 public class RestauranteUseCase implements RestauranteServicePort {
@@ -30,7 +31,7 @@ public class RestauranteUseCase implements RestauranteServicePort {
     }
 
     @Override
-    public Page<RestauranteModel> listarRestaurantesPaginados(int page, int size) {
+    public PageModel<RestauranteModel> listarRestaurantesPaginados(int page, int size) {
         return persistencePort.listarRestaurantesPaginados(page,size);
     }
 

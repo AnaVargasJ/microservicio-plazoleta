@@ -63,7 +63,9 @@ public class RestauranteController implements IRestauranteController {
             @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
 
-    public ResponseEntity<?> listarRestaurantes(HttpServletRequest request, int page, int size) {
+    public ResponseEntity<?> listarRestaurantes(HttpServletRequest request,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(
                 ResponseUtil.success("Restaurantes listados correctamente",
                         restauranteService.listarRestaurante(page, size))
