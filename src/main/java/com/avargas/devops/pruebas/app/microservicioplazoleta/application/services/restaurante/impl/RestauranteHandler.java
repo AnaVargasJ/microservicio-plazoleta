@@ -14,6 +14,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.rest
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,9 @@ public class RestauranteHandler implements IRestauranteHandler {
     }
 
     @Override
-    public PageResponseDTO<RestauranteResumenDTO> listarRestaurante(int page, int size) {
+    public PageResponseDTO<RestauranteResumenDTO> listarRestaurante(
+            @DefaultValue("0") int page,
+            @DefaultValue("5") int size) {
         return iPageResponseMapper.toResponse(restauranteServicePort.listarRestaurantesPaginados(page,size));
 
     }
