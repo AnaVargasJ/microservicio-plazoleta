@@ -38,6 +38,7 @@ public final class SwaggerConstants {
     // === Operaciones Pedidos ===
 
     public static final String OP_CREAR_PEDIDO_SUMMARY = "Crear un nuevo pedido";
+    public static final String OP_ASIGNAR_PEDIDO_SUMMARY = "Asignar pedido a empleado";
     public static final String OP_LISTA_PEDIDO_SUMMARY = "Lista de pedidos por estado";
     public static final String OP_CREAR_PEDIDO_DESC = """
         El cliente realiza un pedido de platos a un restaurante. 
@@ -47,7 +48,13 @@ public final class SwaggerConstants {
         - El estado inicial del pedido será 'PENDIENTE'.
         """;
 
+    public static final String OP_ASIGNAR_PEDIDO_DESC = "Permite a un empleado asignarse un pedido pendiente y cambiar su estado a 'EN_PREPARACION'. " +
+            "El pedido debe pertenecer al restaurante del empleado y estar en estado 'PENDIENTE'";
+
     public static final String OP_LISTA_PEDIDO_DESC = "Obtener lista de pedidos filtrando por estado";
+
+    public static final String DESC_ID_PEDIDO = "ID del pedido a asignar";
+    public static final String DESC_ESTADO_PEDIDO = "Estado del pedido a asignar";
 
     //===Parameters descripciones pedidos
 

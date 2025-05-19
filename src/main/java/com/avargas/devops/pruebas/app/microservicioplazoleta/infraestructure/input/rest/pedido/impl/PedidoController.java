@@ -4,6 +4,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.req
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.pedido.IPedidoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.pedido.IPedidoController;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.DESC_ESTADO_PEDIDO;
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.DESC_ID_PEDIDO;
 
 @RestController
 @RequestMapping(EndpointApi.BASE_PATH_PEDIDOS)
@@ -62,12 +67,47 @@ public class PedidoController implements IPedidoController {
     public ResponseEntity<?> obtenerListaPedidosPorEstado(@PathVariable("estado") String estado,
                                                           @PathVariable("idRestaurante") Long idRestaurante,
                                                           @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size) {
+                                                          @RequestParam(defaultValue = "10") int size,
+                                                          @Parameter(hidden = true)
+                                                          @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
         ;
 
         return ResponseEntity.ok(
                 ResponseUtil.success(SwaggerMessagesConstants.PEDIDO_LISTAS_ESTADO + estado + SwaggerMessagesConstants.PEDIDO_LISTAS_RESTAURANTE + idRestaurante,
-                        pedidoHandler.obtenerListaPedidosPorEstado(estado, idRestaurante, page, size)));
+                        pedidoHandler.obtenerListaPedidosPorEstado(estado, idRestaurante, page, size , usuarioAutenticado.getId())));
     }
+
+    @Override
+    @PutMapping(EndpointApi.ASIGNAR_PEDIDOS)
+    @Operation(summary = SwaggerConstants.OP_ASIGNAR_PEDIDO_SUMMARY,
+            description = SwaggerConstants.OP_ASIGNAR_PEDIDO_DESC)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    @PreAuthorize("hasRole('ROLE_EMP')")
+    public ResponseEntity<?> asignarPedido(
+            @Parameter(description = DESC_ID_PEDIDO, required = true)
+            @PathVariable("id") Long idPedido,
+            @Parameter(description = DESC_ESTADO_PEDIDO, required = true)
+            @PathVariable String estado,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
+    ) {
+
+        pedidoHandler.asignarPedido(idPedido, estado, usuarioAutenticado.getId());
+        return new ResponseEntity<>(
+                ResponseUtil.response(
+                        SwaggerMessagesConstants.PEDIDO_USUARIO_CORREO + usuarioAutenticado.getUsername(),
+                        HttpStatus.OK.value()
+                ),
+                HttpStatus.OK
+        );
+
+    }
+
 }
 

@@ -2,11 +2,15 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.in
 
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PedidoRequestDTO;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface IPedidoController {
 
     ResponseEntity<?> crearPedido(HttpServletRequest request, PedidoRequestDTO pedidoRequestDTO);
-    ResponseEntity<?> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size);
+    ResponseEntity<?> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size, UsuarioAutenticado usuarioAutenticado);
+
+    ResponseEntity<?> asignarPedido(Long idPedido, String estado, UsuarioAutenticado usuarioAutenticado);
+
 }
