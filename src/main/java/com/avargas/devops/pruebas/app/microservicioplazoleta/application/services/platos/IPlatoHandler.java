@@ -2,6 +2,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.application.servic
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PlatoResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -13,7 +14,7 @@ public interface IPlatoHandler {
 
     void activarDesactivarPlato(Long id, Boolean activo,Long idPropietario);
 
-    List<PlatoResponseDTO> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size);
+    PageResponseDTO<PlatoResponseDTO> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size);
 
 
 }

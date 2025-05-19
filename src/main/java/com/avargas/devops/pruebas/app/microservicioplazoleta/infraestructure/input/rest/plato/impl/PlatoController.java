@@ -125,7 +125,7 @@ public class PlatoController implements IPlatoController {
                                                      @RequestParam(defaultValue = "10") int size) {
 
         return ResponseEntity.ok(
-                ResponseUtil.success("Restaurantes listados correctamente",
+                ResponseUtil.success("Se listan los platos del restaurante con el id " + idRestaurante,
                         platoService.listarPlatosRestaurante(idRestaurante, idCategoria, page, size))
         );
     }

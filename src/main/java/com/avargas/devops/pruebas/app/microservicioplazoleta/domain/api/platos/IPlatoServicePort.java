@@ -1,9 +1,8 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.platos;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
-import org.springframework.data.domain.Page;
 
-import java.util.Map;
 
 public interface IPlatoServicePort {
     void crearPlato(PlatoModel platoModel);
@@ -12,7 +11,7 @@ public interface IPlatoServicePort {
     void modificarPlato(Long id, PlatoModel platoModel);
 
     void activarDesactivarPlato(Long id, Boolean activo, Long idPropietario);
-    Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size);
+    PageModel<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size);
 
 
 

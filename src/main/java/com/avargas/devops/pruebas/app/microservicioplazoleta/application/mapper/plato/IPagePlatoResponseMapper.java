@@ -12,7 +12,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE
 )
-public interface IPageResponseMapper {
+public interface IPagePlatoResponseMapper {
     @Mapping(source = "content", target = "content")
     @Mapping(source = "currentPage", target = "currentPage")
     @Mapping(source = "pageSize", target = "pageSize")

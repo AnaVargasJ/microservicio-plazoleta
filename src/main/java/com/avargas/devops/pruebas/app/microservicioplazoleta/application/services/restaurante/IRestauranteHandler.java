@@ -11,4 +11,6 @@ public interface IRestauranteHandler {
   void crearRestaurante(HttpServletRequest request, RestauranteDTO restauranteDTO);
 
   PageResponseDTO<RestauranteResumenDTO> listarRestaurante(int page, int size);
+
+
 }
