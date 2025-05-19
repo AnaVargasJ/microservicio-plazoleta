@@ -3,6 +3,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.platos.PlatoDataException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.platos.PlatoInvalidoException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.CategoriaModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -289,6 +291,74 @@ class PlatoUseCaseTest {
 
         verify(platoPersistencePort, never()).activarDesactivarPlato(anyLong(), anyBoolean());
     }
+
+    @Test
+    @Order(12)
+    void listarPlatosRestaurante_conCategoria_filtroAplicado() {
+        Long idRestaurante = 1L;
+        Long idCategoria = 10L;
+        int page = 0;
+        int size = 5;
+
+        PageModel<PlatoModel> pageModelEsperado = PageModel.<PlatoModel>builder()
+                .content(List.of(crearPlatoValido()))
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        when(platoPersistencePort.listarPlatosRestaurante(idRestaurante, idCategoria, page, size))
+                .thenReturn(pageModelEsperado);
+
+        PageModel<PlatoModel> resultado = platoUseCase.listarPlatosRestaurante(idRestaurante, idCategoria, page, size);
+
+        assertEquals(pageModelEsperado, resultado);
+        verify(platoPersistencePort).listarPlatosRestaurante(idRestaurante, idCategoria, page, size);
+    }
+
+    @Test
+    @Order(13)
+    void listarPlatosRestaurante_sinCategoria_sinFiltro() {
+        Long idRestaurante = 1L;
+        Long idCategoria = null;
+        int page = 0;
+        int size = 5;
+
+        PageModel<PlatoModel> pageModelEsperado = PageModel.<PlatoModel>builder()
+                .content(List.of(crearPlatoValido()))
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        when(platoPersistencePort.listarPlatosRestaurante(idRestaurante, idCategoria, page, size))
+                .thenReturn(pageModelEsperado);
+
+        PageModel<PlatoModel> resultado = platoUseCase.listarPlatosRestaurante(idRestaurante, idCategoria, page, size);
+
+        assertEquals(pageModelEsperado, resultado);
+        verify(platoPersistencePort).listarPlatosRestaurante(idRestaurante, idCategoria, page, size);
+    }
+
+    private PlatoModel crearPlatoValido() {
+        return PlatoModel.builder()
+                .id(1L)
+                .nombre("Plato de prueba")
+                .descripcion("Descripción")
+                .precio(new BigDecimal("20000"))
+                .urlImagen("https://imagen.com/plato.jpg")
+                .categoriaModel(CategoriaModel.builder().id(1L).build())
+                .restauranteModel(RestauranteModel.builder().id(1L).build())
+                .activo(true)
+                .build();
+    }
+
 
 
 }

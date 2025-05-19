@@ -3,10 +3,10 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.pla
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.platos.IPlatoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.platos.PlatoDataException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.platos.PlatoInvalidoException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 
@@ -52,7 +52,7 @@ public class PlatoUseCase implements IPlatoServicePort {
     }
 
     @Override
-    public Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+    public PageModel<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
         return persistencePort.listarPlatosRestaurante(idRestaurante, idCategoria, page,size);
     }
 

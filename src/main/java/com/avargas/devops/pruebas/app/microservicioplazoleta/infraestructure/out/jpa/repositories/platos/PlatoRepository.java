@@ -32,18 +32,28 @@ public interface PlatoRepository extends JpaRepository<PlatoEntity, Long> {
     Optional<PlatoEntity> findByIdWithRelations(@Param("id") Long id);
 
     @Query("""
-    SELECT CASE 
-             WHEN COUNT(p) > 0 THEN true 
-             ELSE false 
-           END 
-    FROM PlatoEntity p 
-    WHERE p.id = :idPlato 
-      AND p.restauranteEntity.idPropietario = :idUsuario
-""")
+                SELECT CASE 
+                         WHEN COUNT(p) > 0 THEN true 
+                         ELSE false 
+                       END 
+                FROM PlatoEntity p 
+                WHERE p.id = :idPlato 
+                  AND p.restauranteEntity.idPropietario = :idUsuario
+            """)
     Boolean existsPlatoOwnedByUsuario(@Param("idPlato") Long idPlato, @Param("idUsuario") Long idUsuario);
 
 
-    Page<PlatoEntity> findByRestauranteEntityIdAndCategoriaEntityIdAndActivoTrue(Long idRestaurante, Long idCategoria, Pageable pageable);
+    @Query("""
+                SELECT p FROM PlatoEntity p
+                WHERE p.restauranteEntity.id = :idRestaurante
+                  AND (:idCategoria IS NULL OR p.categoriaEntity.id = :idCategoria)
+                  AND p.activo = true
+            """)
+    Page<PlatoEntity> findPlatosPorRestauranteYCategoria(
+            @Param("idRestaurante") Long idRestaurante,
+            @Param("idCategoria") Long idCategoria,
+            Pageable pageable
+    );
 
 
 }

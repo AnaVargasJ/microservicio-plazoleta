@@ -1,6 +1,8 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.platos;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.CategoriaEntity;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.PlatoEntity;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -65,13 +68,23 @@ public class PlatoJpaAdapter  implements PlatoPersistencePort {
     }
 
     @Override
-    public Page<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+    public PageModel<PlatoModel> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<PlatoEntity> platosPaginados = platoRepository
-                .findByRestauranteEntityIdAndCategoriaEntityIdAndActivoTrue(idRestaurante, idCategoria, pageable);
+                .findPlatosPorRestauranteYCategoria(idRestaurante, idCategoria, pageable);
 
-        return platosPaginados.map(entityMapper::toPlatoModel);
+        List<PlatoModel> modelos = entityMapper.toPlatoModelList(platosPaginados.getContent());
+
+        return PageModel.<PlatoModel>builder()
+                .content(modelos)
+                .currentPage(platosPaginados.getNumber())
+                .pageSize(platosPaginados.getSize())
+                .totalElements(platosPaginados.getTotalElements())
+                .totalPages(platosPaginados.getTotalPages())
+                .hasNext(platosPaginados.hasNext())
+                .hasPrevious(platosPaginados.hasPrevious())
+                .build();
     }
 
 

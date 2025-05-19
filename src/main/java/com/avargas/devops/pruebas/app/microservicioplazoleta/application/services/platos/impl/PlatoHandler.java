@@ -2,7 +2,9 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.application.servic
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PlatoResponseDTO;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPagePlatoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoRequestMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.plato.IPlatoUpdateRequestMapper;
@@ -29,6 +31,7 @@ public class PlatoHandler implements IPlatoHandler {
     private final IPlatoRequestMapper iPlatoRequestMapper;
     private final IPlatoUpdateRequestMapper iPlatoUpdateRequestMapper;
     private final IPlatoResponseMapper iPlatoResponseMapper;
+    private final IPagePlatoResponseMapper iPageResponseMapper;
     @Override
     public void crearPlato(HttpServletRequest request, PlatoDTO platoDTO) {
         PlatoModel platoModel = iPlatoRequestMapper.toModel(platoDTO);
@@ -53,12 +56,7 @@ public class PlatoHandler implements IPlatoHandler {
     }
 
     @Override
-    public List<PlatoResponseDTO> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
-
-        List<PlatoModel> platoModelos = iPlatoServicePort
-                .listarPlatosRestaurante(idRestaurante,idCategoria,page, size)
-                .getContent();
-
-        return  iPlatoResponseMapper.toResponsePlatosModelList(platoModelos);
+    public PageResponseDTO<PlatoResponseDTO> listarPlatosRestaurante(Long idRestaurante, Long idCategoria, int page, int size) {
+        return iPageResponseMapper.toResponse(iPlatoServicePort.listarPlatosRestaurante(idRestaurante,idCategoria,page, size));
     }
 }
