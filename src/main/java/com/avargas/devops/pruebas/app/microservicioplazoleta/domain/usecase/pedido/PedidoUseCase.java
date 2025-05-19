@@ -10,6 +10,8 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.I
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.PEDIDO_EN_PROCESO;
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.PLATOS_DISTINTO_RESTAURANTE;
 
@@ -31,9 +33,11 @@ public class PedidoUseCase implements IPedidoServicePort {
             PlatoModel plato = platoPersistencePort.getPlatoModelById(platoPedido.getPlatoModel().getId());
             if (!plato.getRestauranteModel().getId().equals(idRestaurante))
                 throw new PedidoInvalidoException(PLATOS_DISTINTO_RESTAURANTE);
-            platoPedido.setPlatoModel(plato);
 
             pedidoModel.setEstado(String.valueOf(EstadoPedido.PENDIENTE));
+            pedidoModel.setFecha(LocalDateTime.now());
+
+
 
             persistencePort.guardarPedido(pedidoModel);
         }

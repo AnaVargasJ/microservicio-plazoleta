@@ -17,7 +17,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.platos.PlatoJpaAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.restaurante.RestauranteJpaAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.categorias.ICategoriaEntityMapper;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.PedidoEntityMapper;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.IPedidoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.platos.IPlatoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.restaurantes.IRestauranteEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.categorias.CategoriaRepository;
@@ -40,7 +40,7 @@ public class BeanConfiguration {
     private final CategoriaRepository categoriaRepository;
     private final ICategoriaEntityMapper iCategoriaEntityMapper;
     private final PedidoEntityRepository pedidoRepository;
-    private final PedidoEntityMapper pedidoEntityMapper;
+    private final IPedidoEntityMapper pedidoEntityMapper;
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();

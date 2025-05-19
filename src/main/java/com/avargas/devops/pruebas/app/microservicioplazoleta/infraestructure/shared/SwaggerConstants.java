@@ -13,6 +13,10 @@ public final class SwaggerConstants {
     public static final String TAG_RESTAURANTE = "Restaurante";
     public static final String TAG_RESTAURANTE_DESC = "Aplicación que crea restaurantes por medio de un administrador.";
 
+    public static final String TAG_PEDIDO = "Pedidos";
+    public static final String TAG_PEDIDO_DESC = "Operaciones relacionadas con pedidos de clientes";
+
+
     // === Operaciones - Plato ===
     public static final String OP_CREAR_PLATO_SUMMARY = "Crear Plato";
     public static final String OP_CREAR_PLATO_DESC = "Permite al propietario de un restaurante crear un nuevo plato y asociarlo a una categoría y restaurante.";
@@ -30,6 +34,21 @@ public final class SwaggerConstants {
 
     public static final String OP_LISTAR_RESTAURANTES_SUMMARY = "Listar restaurantes disponibles";
     public static final String OP_LISTAR_RESTAURANTES_DESC = "Retorna un listado paginado y ordenado alfabéticamente de restaurantes.";
+
+    // === Operaciones Pedidos ===
+
+    public static final String OP_CREAR_PEDIDO_SUMMARY = "Crear un nuevo pedido";
+    public static final String OP_CREAR_PEDIDO_DESC = """
+        El cliente realiza un pedido de platos a un restaurante. 
+        El pedido debe cumplir con las reglas del negocio:
+        - Todos los platos deben pertenecer al mismo restaurante.
+        - El cliente no debe tener otro pedido en proceso.
+        - El estado inicial del pedido será 'PENDIENTE'.
+        """;
+
+    //===Parameters descripciones pedidos
+
+    public static final String DESC_PEDIDO_REGISTRAR = "Datos del pedido a registrar";
 
     // === Respuestas comunes ===
     public static final String RESPONSE_200_DESC = "Operación realizada correctamente.";

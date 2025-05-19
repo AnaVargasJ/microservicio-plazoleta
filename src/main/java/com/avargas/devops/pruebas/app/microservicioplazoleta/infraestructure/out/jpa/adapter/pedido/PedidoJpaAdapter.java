@@ -3,7 +3,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.ou
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.PedidoEntity;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.PedidoEntityMapper;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.IPedidoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.pedido.PedidoEntityRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class PedidoJpaAdapter implements IPedidoPersistencePort {
 
     private final PedidoEntityRepository pedidoRepository;
-    private final PedidoEntityMapper entityMapper;
+    private final IPedidoEntityMapper entityMapper;
     @Override
     public void guardarPedido(PedidoModel pedidoModel) {
         PedidoEntity entity = entityMapper.toEntity(pedidoModel);
