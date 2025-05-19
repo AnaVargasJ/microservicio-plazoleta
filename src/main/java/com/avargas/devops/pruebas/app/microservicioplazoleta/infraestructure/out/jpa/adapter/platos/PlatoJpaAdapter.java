@@ -2,7 +2,6 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.ou
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.CategoriaEntity;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.PlatoEntity;
