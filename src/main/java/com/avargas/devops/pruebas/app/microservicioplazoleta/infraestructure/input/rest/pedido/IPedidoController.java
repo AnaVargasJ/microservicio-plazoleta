@@ -8,4 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface IPedidoController {
 
     ResponseEntity<?> crearPedido(HttpServletRequest request, PedidoRequestDTO pedidoRequestDTO);
+    ResponseEntity<?> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size);
 }

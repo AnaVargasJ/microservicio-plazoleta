@@ -13,6 +13,10 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class PedidoPlatoEntityMapper implements IPedidoPlatoEntityMapper {
@@ -46,4 +50,14 @@ public class PedidoPlatoEntityMapper implements IPedidoPlatoEntityMapper {
                 .cantidad(entity.getCantidad())
                 .build();
     }
+
+    @Override
+    public List<PedidoPlatoModel> toModelList(List<PedidoPlatoEntity> entities) {
+        if (entities == null) return new ArrayList<>();
+
+        return entities.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+    }
+
 }

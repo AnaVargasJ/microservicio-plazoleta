@@ -1,10 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pedido.PedidoInvalidoException;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoPlatoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
@@ -44,7 +41,7 @@ class PedidoUseCaseTest {
 
         PedidoModel pedido = buildPedidoModel(1L);
         PedidoModel pedidoConId = PedidoModel.builder()
-                .id(99L) // Simular que se generó el ID
+                .id(99L)
                 .idCliente(pedido.getIdCliente())
                 .restauranteModel(pedido.getRestauranteModel())
                 .platos(pedido.getPlatos())
@@ -99,6 +96,39 @@ class PedidoUseCaseTest {
         verify(pedidoPlatoPersistencePort, never()).guardarPlatosDePedido(any(), any());
     }
 
+    @Test
+    @Order(4)
+    void obtenerPedidosPorEstadoYRestaurante_retornaPedidosFiltrados() {
+        String estado = "PENDIENTE";
+        Long idRestaurante = 1L;
+        int page = 0;
+        int size = 10;
+
+        PedidoModel pedido = buildPedidoModel(idRestaurante);
+        pedido.setEstado(estado); 
+
+        PageModel<PedidoModel> pageModelMock = PageModel.<PedidoModel>builder()
+                .content(List.of(pedido))
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(1L)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        when(pedidoPersistencePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size))
+                .thenReturn(pageModelMock);
+
+        PageModel<PedidoModel> resultado = pedidoUseCase.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        assertEquals("PENDIENTE", resultado.getContent().get(0).getEstado());
+        verify(pedidoPersistencePort).obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size);
+    }
+
+
     private PedidoModel buildPedidoModel(Long idRestaurante) {
         RestauranteModel restaurante = RestauranteModel.builder()
                 .id(idRestaurante)
@@ -120,5 +150,8 @@ class PedidoUseCaseTest {
                 .platos(List.of(pedidoPlato))
                 .build();
     }
+
+
+
 }
 

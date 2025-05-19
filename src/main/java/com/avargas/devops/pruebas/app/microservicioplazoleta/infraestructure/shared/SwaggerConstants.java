@@ -38,6 +38,7 @@ public final class SwaggerConstants {
     // === Operaciones Pedidos ===
 
     public static final String OP_CREAR_PEDIDO_SUMMARY = "Crear un nuevo pedido";
+    public static final String OP_LISTA_PEDIDO_SUMMARY = "Lista de pedidos por estado";
     public static final String OP_CREAR_PEDIDO_DESC = """
         El cliente realiza un pedido de platos a un restaurante. 
         El pedido debe cumplir con las reglas del negocio:
@@ -45,6 +46,8 @@ public final class SwaggerConstants {
         - El cliente no debe tener otro pedido en proceso.
         - El estado inicial del pedido será 'PENDIENTE'.
         """;
+
+    public static final String OP_LISTA_PEDIDO_DESC = "Obtener lista de pedidos filtrando por estado";
 
     //===Parameters descripciones pedidos
 

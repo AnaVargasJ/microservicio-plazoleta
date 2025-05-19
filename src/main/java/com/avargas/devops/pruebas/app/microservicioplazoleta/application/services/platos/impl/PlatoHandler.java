@@ -30,7 +30,6 @@ public class PlatoHandler implements IPlatoHandler {
     private final ICategoriaServicePort  iCategoriaServicePort;
     private final IPlatoRequestMapper iPlatoRequestMapper;
     private final IPlatoUpdateRequestMapper iPlatoUpdateRequestMapper;
-    private final IPlatoResponseMapper iPlatoResponseMapper;
     private final IPagePlatoResponseMapper iPageResponseMapper;
     @Override
     public void crearPlato(HttpServletRequest request, PlatoDTO platoDTO) {
