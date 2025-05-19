@@ -4,6 +4,6 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.Pedido
 
 public interface IPedidoPersistencePort {
 
-    void guardarPedido(PedidoModel pedidoModel);
+    PedidoModel guardarPedido(PedidoModel pedidoModel);
     Boolean existePedidoEnProceso(Long idCliente);
 }

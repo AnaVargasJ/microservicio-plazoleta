@@ -7,6 +7,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.Pedido
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoPlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,7 @@ public class PedidoUseCase implements IPedidoServicePort {
 
     private final IPedidoPersistencePort persistencePort;
     private final PlatoPersistencePort platoPersistencePort;
+    private final IPedidoPlatoPersistencePort pedidoPlatoPersistencePort;
 
     @Override
     public void crearPedido(PedidoModel pedidoModel) {
@@ -34,12 +36,18 @@ public class PedidoUseCase implements IPedidoServicePort {
             if (!plato.getRestauranteModel().getId().equals(idRestaurante))
                 throw new PedidoInvalidoException(PLATOS_DISTINTO_RESTAURANTE);
 
-            pedidoModel.setEstado(String.valueOf(EstadoPedido.PENDIENTE));
-            pedidoModel.setFecha(LocalDateTime.now());
-
-
-
-            persistencePort.guardarPedido(pedidoModel);
+            platoPedido.setPlatoModel(plato);
         }
+
+        pedidoModel.setEstado(String.valueOf(EstadoPedido.PENDIENTE));
+        pedidoModel.setFecha(LocalDateTime.now());
+
+        PedidoModel pedidoGuardado = persistencePort.guardarPedido(pedidoModel);
+
+        for (PedidoPlatoModel platoModel : pedidoModel.getPlatos()) {
+            platoModel.setPedidoModel(pedidoGuardado);
+        }
+
+        pedidoPlatoPersistencePort.guardarPlatosDePedido(pedidoModel.getPlatos(), pedidoGuardado.getId());
     }
 }
