@@ -4,11 +4,13 @@ public interface EndpointApi {
 
     String BASE_PATH_PLATOS = "/api/v1/plato";
     String BASE_PATH_RESTAURANTE= "/api/v1/plazoleta";
+    String BASE_PATH_PEDIDOS= "/api/v1/pedidos";
 
     String LIST_RESTAURANTES = "/restaurantes";
     String CREATE_RESTAURANTE = "/crearRestaurante";
 
     String CREATE_PLATOS = "/crearPlato";
+    String CREATE_PEDIDOS = "/crearPedido";
 
     String UPDATE_PLATO = "/modificarPlato/{idPlato}";
 

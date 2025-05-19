@@ -34,8 +34,9 @@ public class PedidoEntity implements Serializable {
     @Column(name = "id_cliente", nullable = false)
     private Long idCliente;
 
-    @Column(name = "id_chef", nullable = false)
+    @Column(name = "id_chef", nullable = true)
     private Long idChef;
+
 
     @ManyToOne
     @JoinColumn(name = "id_restaurante", nullable = false)
