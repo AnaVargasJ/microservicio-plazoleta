@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.pedido.impl;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PedidoRequestDTO;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.pedido.IPedidoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.pedido.IPedidoController;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.*;
@@ -16,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(EndpointApi.BASE_PATH_PEDIDOS)
@@ -28,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PedidoController implements IPedidoController {
 
     private final IPedidoHandler pedidoHandler;
+
     @Override
     @PostMapping(EndpointApi.CREATE_PEDIDOS)
     @Operation(summary = SwaggerConstants.OP_CREAR_PEDIDO_SUMMARY,
@@ -41,10 +40,34 @@ public class PedidoController implements IPedidoController {
     })
     @PreAuthorize("hasRole('ROLE_CLI')")
     public ResponseEntity<?> crearPedido(HttpServletRequest request,
-                                                    @Parameter(description = SwaggerConstants.DESC_PEDIDO_REGISTRAR , required = true,
-                                                            content = @Content(schema = @Schema(implementation = PedidoRequestDTO.class)))
-                                                    @RequestBody PedidoRequestDTO pedidoRequestDTO)  {
-         pedidoHandler.crearPedidos(pedidoRequestDTO);
+                                         @Parameter(description = SwaggerConstants.DESC_PEDIDO_REGISTRAR, required = true,
+                                                 content = @Content(schema = @Schema(implementation = PedidoRequestDTO.class)))
+                                         @RequestBody PedidoRequestDTO pedidoRequestDTO) {
+        pedidoHandler.crearPedidos(pedidoRequestDTO);
         return new ResponseEntity<>(ResponseUtil.success(SwaggerMessagesConstants.PEDIDO_CREADO), HttpStatus.CREATED);
     }
+
+    @Override
+    @GetMapping(EndpointApi.LIST_PEDIDOS_BY_ESTADO)
+    @PreAuthorize("hasRole('ROLE_EMP')")
+    @Operation(
+            summary = SwaggerConstants.OP_LISTA_PEDIDO_SUMMARY,
+            description = SwaggerConstants.OP_LISTA_PEDIDO_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC, content = @Content(schema = @Schema(implementation = ResponseDTO.class))),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC, content = @Content(schema = @Schema(implementation = ResponseDTO.class))),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC, content = @Content(schema = @Schema(implementation = ResponseDTO.class)))
+    })
+    public ResponseEntity<?> obtenerListaPedidosPorEstado(@PathVariable("estado") String estado,
+                                                          @PathVariable("idRestaurante") Long idRestaurante,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "10") int size) {
+        ;
+
+        return ResponseEntity.ok(
+                ResponseUtil.success(SwaggerMessagesConstants.PEDIDO_LISTAS_ESTADO + estado + SwaggerMessagesConstants.PEDIDO_LISTAS_RESTAURANTE + idRestaurante,
+                        pedidoHandler.obtenerListaPedidosPorEstado(estado, idRestaurante, page, size)));
+    }
 }
+

@@ -7,4 +7,6 @@ public class SwaggerMessagesConstants {
     }
 
     public static final String PEDIDO_CREADO = "Pedido creado correctamente";
+    public static final String PEDIDO_LISTAS_ESTADO = "Se listan los pedidos con estado ";
+    public static final String PEDIDO_LISTAS_RESTAURANTE = "con id restaurante ";
 }

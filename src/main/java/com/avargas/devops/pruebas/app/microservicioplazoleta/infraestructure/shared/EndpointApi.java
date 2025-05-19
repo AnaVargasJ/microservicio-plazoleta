@@ -18,5 +18,7 @@ public interface EndpointApi {
 
     String LIST_PLATOS = "/{idRestaurante}/platos";
 
+    String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
+
 
 }

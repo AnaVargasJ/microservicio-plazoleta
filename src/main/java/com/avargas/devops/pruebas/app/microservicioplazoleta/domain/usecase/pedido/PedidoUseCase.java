@@ -2,10 +2,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.ped
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pedido.PedidoInvalidoException;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.EstadoPedido;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoPlatoModel;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PlatoModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
@@ -49,5 +46,10 @@ public class PedidoUseCase implements IPedidoServicePort {
         }
 
         pedidoPlatoPersistencePort.guardarPlatosDePedido(pedidoModel.getPlatos(), pedidoGuardado.getId());
+    }
+
+    @Override
+    public PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante(String estado, Long idRestaurante, int page, int size) {
+        return persistencePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante,page, size);
     }
 }
