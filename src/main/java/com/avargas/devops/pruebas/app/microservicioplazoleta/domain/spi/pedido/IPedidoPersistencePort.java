@@ -8,5 +8,9 @@ public interface IPedidoPersistencePort {
     PedidoModel guardarPedido(PedidoModel pedidoModel);
     Boolean existePedidoEnProceso(Long idCliente);
 
-    PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante,int page, int size) ;
+    PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante,int page, int size, Long idUsuario) ;
+
+    void asignarPedido(Long idPedido, Long idUsuario, String estado);
+
+    PedidoModel buscarPedidoPorId(Long idPedido);
 }

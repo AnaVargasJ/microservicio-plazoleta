@@ -8,4 +8,7 @@ public class MensajeRepositories {
     public static final String PEDIDO_NO_ENCONTRADO = "Pedido no encontrado con ID: ";
 
     public static final String PLATO_NO_ENCONTRADO = "Plato no encontrado con ID: ";
+
+    public static final String ESTADO_PEDIDO = "El estado de pedido es inválido.";
+    public static final String EMPLEADO_ASOCIADO = "El empleado no tiene restaurante asociado.";
 }

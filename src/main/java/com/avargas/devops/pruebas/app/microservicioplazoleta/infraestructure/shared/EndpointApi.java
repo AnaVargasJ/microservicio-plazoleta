@@ -12,6 +12,8 @@ public interface EndpointApi {
     String CREATE_PLATOS = "/crearPlato";
     String CREATE_PEDIDOS = "/crearPedido";
 
+    String ASIGNAR_PEDIDOS = "/pedidos/{id}/asignar/{estado}";
+
     String UPDATE_PLATO = "/modificarPlato/{idPlato}";
 
     String DISABLE_PLATO = "/plato/{id}/estado";

@@ -7,5 +7,9 @@ public interface IPedidoServicePort {
 
     void crearPedido(PedidoModel pedidoModel);
 
-    PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante, int page, int size) ;
+    PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante, int page, int size , Long idUsuario) ;
+
+    void asignarPedido(Long idPedido, String estado, Long idUsuario);
+
+    PedidoModel buscarPorIdPlato(Long idPedido);
 }

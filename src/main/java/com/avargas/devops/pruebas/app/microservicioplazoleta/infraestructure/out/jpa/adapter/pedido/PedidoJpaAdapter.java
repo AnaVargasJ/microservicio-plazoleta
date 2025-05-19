@@ -1,9 +1,13 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.pedido;
 
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.EstadoPedido;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.RestauranteModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.exception.EstadoPedidoException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.PedidoEntity;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.RestauranteEntity;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.IPedidoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.pedido.PedidoEntityRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +16,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.MensajeRepositories.EMPLEADO_ASOCIADO;
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.MensajeRepositories.ESTADO_PEDIDO;
 
 @RequiredArgsConstructor
 public class PedidoJpaAdapter implements IPedidoPersistencePort {
 
     private final PedidoEntityRepository pedidoRepository;
     private final IPedidoEntityMapper entityMapper;
+
     @Override
     public PedidoModel guardarPedido(PedidoModel pedidoModel) {
         PedidoEntity entity = entityMapper.toEntity(pedidoModel);
@@ -33,13 +42,42 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
     }
 
     @Override
-    public PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante(String estado, Long idRestaurante, int page, int size) {
+    public PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante(String estado, Long idRestaurante, int page, int size, Long idUsuario) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<PedidoEntity> pedidosPaginados = pedidoRepository.findByEstadoAndRestauranteId(estado,idRestaurante, pageable);
+        EstadoPedido estadoEnum;
+
+        try {
+            estadoEnum = EstadoPedido.valueOf(estado);
+        } catch (IllegalArgumentException e) {
+            throw new EstadoPedidoException(EMPLEADO_ASOCIADO);
+        }
+
+
+        Page<PedidoEntity> pedidosPaginados = pedidoRepository.findByEstadoAndRestauranteId(estado, idRestaurante, pageable);
         List<PedidoModel> modelos = entityMapper.toModelList(pedidosPaginados.getContent());
 
+        List<PedidoModel> pedidosFiltrados = modelos.stream()
+                .filter(p -> {
+                    String status = p.getEstado();
+                    Long idChef = p.getIdChef();
+
+                    if (EstadoPedido.PENDIENTE.name().equals(status) && idChef == null) {
+                        return true;
+                    }
+
+                    if (!EstadoPedido.PENDIENTE.name().equals(status) && (idChef != null && idUsuario.equals(idChef))) {
+                        return true;
+                    }
+                    return false;
+                })
+                .toList();
+
+        if (pedidosFiltrados.isEmpty())
+            throw new EstadoPedidoException(EMPLEADO_ASOCIADO);
+
+
         return PageModel.<PedidoModel>builder()
-                .content(modelos)
+                .content(pedidosFiltrados)
                 .currentPage(pedidosPaginados.getNumber())
                 .pageSize(pedidosPaginados.getSize())
                 .totalElements(pedidosPaginados.getTotalElements())
@@ -48,4 +86,17 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
                 .hasPrevious(pedidosPaginados.hasPrevious())
                 .build();
     }
+
+    @Override
+    public void asignarPedido(Long idPedido, Long idUsuario, String estado) {
+        int actualizarPedidos = pedidoRepository.asignarPedido(idPedido, idUsuario, estado);
+
+    }
+
+    @Override
+    public PedidoModel buscarPedidoPorId(Long idPedido) {
+        Optional<PedidoEntity> filtrarPorId = pedidoRepository.findById(idPedido);
+        return filtrarPorId.map(entityMapper::toModel).orElseGet(null);
+    }
+
 }

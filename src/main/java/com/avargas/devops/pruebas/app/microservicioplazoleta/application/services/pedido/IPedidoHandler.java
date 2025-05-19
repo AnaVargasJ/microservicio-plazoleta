@@ -3,11 +3,14 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.application.servic
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PedidoRequestDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PedidoResponseDTO;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 
 public interface IPedidoHandler {
 
     void crearPedidos(PedidoRequestDTO dto);
 
-    PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size);
+    PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size, Long idUsuario);
+
+    void asignarPedido(Long idPedido,String estado, Long idUsuario);
 
 }

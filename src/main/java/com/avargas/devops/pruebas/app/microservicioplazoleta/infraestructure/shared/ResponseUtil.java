@@ -29,7 +29,7 @@ public class ResponseUtil {
                 .build();
     }
 
-    public static ResponseDTO error(String mensaje,  int codigo) {
+    public static ResponseDTO response(String mensaje,  int codigo) {
         return ResponseDTO.builder()
                 .mensaje(mensaje)
                 .codigo(codigo)

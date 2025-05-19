@@ -25,8 +25,13 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size) {
-        return iPageResponseMapper.toResponse(pedidoServicePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size));
+    public PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size,  Long idUsuario) {
+        return iPageResponseMapper.toResponse(pedidoServicePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size, idUsuario));
 
+    }
+
+    @Override
+    public void asignarPedido(Long idPedido, String estado, Long idUsuario) {
+        pedidoServicePort.asignarPedido(idPedido,estado, idUsuario);
     }
 }
