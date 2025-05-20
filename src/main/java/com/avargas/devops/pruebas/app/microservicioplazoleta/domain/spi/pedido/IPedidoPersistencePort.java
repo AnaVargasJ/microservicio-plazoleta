@@ -3,6 +3,8 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
 
+import java.util.List;
+
 public interface IPedidoPersistencePort {
 
     PedidoModel guardarPedido(PedidoModel pedidoModel);
@@ -13,4 +15,5 @@ public interface IPedidoPersistencePort {
     void asignarPedido(Long idPedido, Long idUsuario, String estado);
 
     PedidoModel buscarPedidoPorId(Long idPedido);
+   List<PedidoModel> buscarPedidosPorIdRestaurante(Long idRestaurante);
 }

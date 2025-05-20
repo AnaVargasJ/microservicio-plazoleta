@@ -26,4 +26,6 @@ public interface PedidoEntityRepository extends JpaRepository<PedidoEntity, Long
     @Query("UPDATE PedidoEntity p SET p.estado = :estado, p.idChef = :idChef WHERE p.id = :id")
     int asignarPedido(@Param("id") Long idPedido, @Param("idChef")Long idUsuario,@Param("estado") String estado);
 
+    List<PedidoEntity> findByRestauranteEntityId(Long idRestaurante);
+
 }

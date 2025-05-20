@@ -11,4 +11,6 @@ public class MensajeRepositories {
 
     public static final String ESTADO_PEDIDO = "El estado de pedido es inválido.";
     public static final String EMPLEADO_ASOCIADO = "El empleado no tiene restaurante asociado.";
+
+    public static String NO_EXISTE_PEDIDO_RESTAURANTE = "No existen pedidos en el restaurante ";
 }

@@ -7,11 +7,14 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.MensajeError.EMPLEADO_NO_ASOCIADO;
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.*;
 
 @RequiredArgsConstructor
@@ -51,6 +54,7 @@ public class PedidoUseCase implements IPedidoServicePort {
 
     @Override
     public PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante(String estado, Long idRestaurante, int page, int size, Long idUsuario) {
+        listarPedidoPorIdRestaurante(idRestaurante,estado, idUsuario);
 
         return persistencePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size, idUsuario);
     }
@@ -58,7 +62,6 @@ public class PedidoUseCase implements IPedidoServicePort {
     @Override
     public void asignarPedido(Long idPedido, String estado, Long idUsuario) {
         PedidoModel pedidoModel = buscarPorIdPlato(idPedido);
-
 
         if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario))
             throw new PedidoInvalidoException( NO_EXISTE_EMPLEADO);
@@ -73,5 +76,24 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new PedidoInvalidoException(NO_EXISTE_PLATOS + idPedido);
         }
         return pedidoModel;
+    }
+
+    private List<PedidoModel> listarPedidoPorIdRestaurante(Long idRestaurante, String estado, Long idUsuario){
+        List<PedidoModel> pedidoModels = persistencePort.buscarPedidosPorIdRestaurante(idRestaurante)
+                .stream().filter(pedido -> {
+                    boolean estadoCoincide = pedido.getEstado().equalsIgnoreCase(estado);
+
+                    if (!estadoCoincide) return false;
+
+                    if ("PENDIENTE".equalsIgnoreCase(estado)) {
+                        return pedido.getIdChef() == null;
+                    } else {
+                        return idUsuario.equals(pedido.getIdChef());
+                    }
+                }).toList();
+        if (pedidoModels.isEmpty())
+            throw new PedidoInvalidoException(EMPLEADO_NO_ASOCIADO.getMessage());
+
+        return pedidoModels;
     }
 }

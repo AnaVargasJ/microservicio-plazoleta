@@ -10,6 +10,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.entities.RestauranteEntity;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.mapper.pedido.IPedidoEntityMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.repositories.pedido.PedidoEntityRepository;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.MensajeRepositories;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,28 +57,10 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
         Page<PedidoEntity> pedidosPaginados = pedidoRepository.findByEstadoAndRestauranteId(estado, idRestaurante, pageable);
         List<PedidoModel> modelos = entityMapper.toModelList(pedidosPaginados.getContent());
 
-        List<PedidoModel> pedidosFiltrados = modelos.stream()
-                .filter(p -> {
-                    String status = p.getEstado();
-                    Long idChef = p.getIdChef();
-
-                    if (EstadoPedido.PENDIENTE.name().equals(status) && idChef == null) {
-                        return true;
-                    }
-
-                    if (!EstadoPedido.PENDIENTE.name().equals(status) && (idChef != null && idUsuario.equals(idChef))) {
-                        return true;
-                    }
-                    return false;
-                })
-                .toList();
-
-        if (pedidosFiltrados.isEmpty())
-            throw new EstadoPedidoException(EMPLEADO_ASOCIADO);
 
 
         return PageModel.<PedidoModel>builder()
-                .content(pedidosFiltrados)
+                .content(modelos)
                 .currentPage(pedidosPaginados.getNumber())
                 .pageSize(pedidosPaginados.getSize())
                 .totalElements(pedidosPaginados.getTotalElements())
@@ -97,6 +80,14 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
     public PedidoModel buscarPedidoPorId(Long idPedido) {
         Optional<PedidoEntity> filtrarPorId = pedidoRepository.findById(idPedido);
         return filtrarPorId.map(entityMapper::toModel).orElseGet(null);
+    }
+
+    @Override
+    public List<PedidoModel> buscarPedidosPorIdRestaurante(Long idRestaurante) {
+        List<PedidoEntity> filtrarPorIdRestaurante = pedidoRepository.findByRestauranteEntityId(idRestaurante);
+        if (filtrarPorIdRestaurante.isEmpty())
+            throw new EstadoPedidoException(MensajeRepositories.NO_EXISTE_PEDIDO_RESTAURANTE + idRestaurante);
+        return entityMapper.toModelList(filtrarPorIdRestaurante);
     }
 
 }

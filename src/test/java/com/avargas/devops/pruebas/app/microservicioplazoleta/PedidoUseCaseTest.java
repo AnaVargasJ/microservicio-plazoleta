@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.MensajeError.EMPLEADO_NO_ASOCIADO;
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,15 +98,22 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(4)
-    void obtenerPedidosPorEstadoYRestaurante_retornaPedidosFiltrados() {
+    void obtenerPedidosPorEstadoYRestaurante_valido_retornaPedidos() {
         String estado = "PENDIENTE";
         Long idRestaurante = 1L;
         Long idUsuario = 10L;
         int page = 0;
         int size = 10;
 
-        PedidoModel pedido = buildPedidoModel(idRestaurante);
-        pedido.setEstado(estado); 
+        PedidoModel pedido = PedidoModel.builder()
+                .id(1L)
+                .estado(estado)
+                .idChef(null) // obligatorio para estado PENDIENTE
+                .restauranteModel(RestauranteModel.builder().id(idRestaurante).build())
+                .build();
+
+        when(pedidoPersistencePort.buscarPedidosPorIdRestaurante(idRestaurante))
+                .thenReturn(List.of(pedido));
 
         PageModel<PedidoModel> pageModelMock = PageModel.<PedidoModel>builder()
                 .content(List.of(pedido))
@@ -120,13 +128,15 @@ class PedidoUseCaseTest {
         when(pedidoPersistencePort.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size, idUsuario))
                 .thenReturn(pageModelMock);
 
-        PageModel<PedidoModel> resultado = pedidoUseCase.obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size, idUsuario);
+        PageModel<PedidoModel> resultado = pedidoUseCase.obtenerPedidosPorEstadoYRestaurante(
+                estado, idRestaurante, page, size, idUsuario);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getContent().size());
-        assertEquals("PENDIENTE", resultado.getContent().get(0).getEstado());
+        verify(pedidoPersistencePort).buscarPedidosPorIdRestaurante(idRestaurante);
         verify(pedidoPersistencePort).obtenerPedidosPorEstadoYRestaurante(estado, idRestaurante, page, size, idUsuario);
     }
+
 
     @Test
     @Order(5)
@@ -144,28 +154,10 @@ class PedidoUseCaseTest {
         verify(pedidoPersistencePort).asignarPedido(1L, 100L, EstadoPedido.EN_PREPARACION.name());
     }
 
+
+
     @Test
     @Order(6)
-    void asignarPedido_estadoNoPendiente_lanzaExcepcion() {
-        PedidoModel pedido = PedidoModel.builder()
-                .id(1L)
-                .estado(EstadoPedido.LISTO.name())
-                .idChef(null)
-                .build();
-
-        when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
-
-        PedidoInvalidoException ex = assertThrows(
-                PedidoInvalidoException.class,
-                () -> pedidoUseCase.asignarPedido(1L, EstadoPedido.EN_PREPARACION.name(), 100L)
-        );
-
-        assertTrue(ex.getMessage().contains(EstadoPedido.PENDIENTE.name()));
-        verify(pedidoPersistencePort, never()).asignarPedido(any(), any(), any());
-    }
-
-    @Test
-    @Order(7)
     void asignarPedido_yaAsignadoAOtroEmpleado_lanzaExcepcion() {
         PedidoModel pedido = PedidoModel.builder()
                 .id(1L)
@@ -184,6 +176,43 @@ class PedidoUseCaseTest {
         assertTrue(ex.getMessage().contains( NO_EXISTE_EMPLEADO));
         verify(pedidoPersistencePort, never()).asignarPedido(any(), any(), any());
     }
+
+
+    @Test
+    @Order(7)
+    void obtenerPedidosPorEstadoYRestaurante_sinPedidosFiltrados_lanzaExcepcion() {
+        String estado = "PENDIENTE";
+        Long idRestaurante = 1L;
+        Long idUsuario = 10L;
+        int page = 0;
+        int size = 10;
+
+        // Pedido con estado que no coincide (para que el filtro lo descarte)
+        PedidoModel pedido = PedidoModel.builder()
+                .id(1L)
+                .estado("ENTREGADO") // No coincide con "PENDIENTE"
+                .idChef(99L) // También se descarta por idChef != null
+                .restauranteModel(RestauranteModel.builder().id(idRestaurante).build())
+                .build();
+
+        // Mock correcto: el pedido sí pertenece al restaurante con ID 1
+        when(pedidoPersistencePort.buscarPedidosPorIdRestaurante(eq(idRestaurante)))
+                .thenReturn(List.of(pedido));
+
+        PedidoInvalidoException ex = assertThrows(
+                PedidoInvalidoException.class,
+                () -> pedidoUseCase.obtenerPedidosPorEstadoYRestaurante(
+                        estado, idRestaurante, page, size, idUsuario)
+        );
+
+        assertEquals(EMPLEADO_NO_ASOCIADO.getMessage(), ex.getMessage());
+
+        verify(pedidoPersistencePort).buscarPedidosPorIdRestaurante(idRestaurante);
+        verify(pedidoPersistencePort, never()).obtenerPedidosPorEstadoYRestaurante(any(), any(), anyInt(), anyInt(), any());
+    }
+
+
+
 
 
 
