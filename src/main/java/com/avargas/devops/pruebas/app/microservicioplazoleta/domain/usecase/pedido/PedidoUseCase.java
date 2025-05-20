@@ -58,9 +58,6 @@ public class PedidoUseCase implements IPedidoServicePort {
     @Override
     public void asignarPedido(Long idPedido, String estado, Long idUsuario) {
         PedidoModel pedidoModel = buscarPorIdPlato(idPedido);
-        if (!EstadoPedido.PENDIENTE.name().equals(pedidoModel.getEstado()))
-            throw new PedidoInvalidoException( NO_EXISTE_ESTADOS + EstadoPedido.PENDIENTE);
-
 
 
         if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario))
