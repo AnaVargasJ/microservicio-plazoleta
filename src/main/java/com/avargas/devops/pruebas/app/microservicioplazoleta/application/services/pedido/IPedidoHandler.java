@@ -14,5 +14,6 @@ public interface IPedidoHandler {
 
     void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario);
     void asignarPedidoPin( Long idPedido, String estado, Long idUsuario, String pin);
+    void cancelarPedido( Long idPedido, Long idUsuario);
 
 }

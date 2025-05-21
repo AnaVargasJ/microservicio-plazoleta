@@ -22,7 +22,6 @@ public class PedidoHandler implements IPedidoHandler {
     private final IPedidoRequestMapper pedidoRequestMapper;
     private final IPedidoServicePort pedidoServicePort;
     private final IPagePedidoResponseMapper iPageResponseMapper;
-    private final INotificacionServicePort notificacionServicePort;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     @Override
@@ -46,5 +45,10 @@ public class PedidoHandler implements IPedidoHandler {
     @Override
     public void asignarPedidoPin(Long idPedido, String estado, Long idUsuario, String pin) {
         pedidoServicePort.asignarPedido(null,idPedido,estado, idUsuario, pin);
+    }
+
+    @Override
+    public void cancelarPedido(Long idPedido, Long idUsuario) {
+        pedidoServicePort.cancelarPedido(idPedido, idUsuario);
     }
 }

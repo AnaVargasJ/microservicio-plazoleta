@@ -16,6 +16,8 @@ public class PedidoMensajeError {
     public static final String PEDIDO_DISTINTO_LISTO = "Solo los pedidos en estado LISTO pueden ser entregados.";
     public static final String PIN_INCORRECTO = "El PIN de seguridad es incorrecto.";
     public static final String PEDIDO_ENTREGADO = "No se puede modificar un pedido ya entregado.";
+    public static final String  PEDIDO_DIFERENTE = "No puedes cancelar un pedido que no es tuyo.";
+    public static final String  PEDIDO_PREPARACION = "Lo sentimos, tu pedido ya está en preparación y no puede cancelarse";
 
 
 

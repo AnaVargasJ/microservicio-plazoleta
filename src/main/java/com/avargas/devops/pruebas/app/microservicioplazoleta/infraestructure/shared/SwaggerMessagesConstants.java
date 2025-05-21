@@ -12,4 +12,5 @@ public class SwaggerMessagesConstants {
 
     public static final String PEDIDO_USUARIO_CORREO = "Se asigna el pedido al usuario con el correo ";
     public static final String ENTREGADO_USUARIO = "Se valida el pin correctamente";
+    public static final String CANCELAR_PEDIDO = "Se cancela el pedido correctamente";
 }

@@ -12,4 +12,6 @@ public interface IPedidoServicePort {
     void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado);
 
     PedidoModel buscarPorIdPlato(Long idPedido);
+
+    void cancelarPedido(Long idPedido, Long idCliente);
 }

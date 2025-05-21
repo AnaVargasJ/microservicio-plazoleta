@@ -138,5 +138,30 @@ public class PedidoController implements IPedidoController {
         );
     }
 
+    @Override
+    @PutMapping(EndpointApi.CANCELAR_PEDIDOS)
+    @Operation(summary = SwaggerConstants.OP_CANCELAR_PEDIDO_SUMMARY,
+            description = SwaggerConstants.OP_CANCELAR_PEDIDO_DESC)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    @PreAuthorize("hasRole('ROLE_CLI')")
+    public ResponseEntity<?> cancelarPedido(HttpServletRequest request,
+                                            @Parameter(description = DESC_ID_PEDIDO, required = true)
+                                            @PathVariable("id") Long idPedido, @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
+        pedidoHandler.cancelarPedido(idPedido, usuarioAutenticado.getId());
+        return new ResponseEntity<>(
+                ResponseUtil.response(
+                        SwaggerMessagesConstants.CANCELAR_PEDIDO,
+                        HttpStatus.OK.value()
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
 
