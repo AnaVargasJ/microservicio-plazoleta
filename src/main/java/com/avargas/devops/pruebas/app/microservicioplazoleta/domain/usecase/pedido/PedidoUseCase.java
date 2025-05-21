@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.MensajeError.EMPLEADO_NO_ASOCIADO;
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.*;
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.constants.EstadoPedido.CANCELADO;
 
 @RequiredArgsConstructor
 public class PedidoUseCase implements IPedidoServicePort {
@@ -99,6 +100,21 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new PedidoInvalidoException(NO_EXISTE_PLATOS + idPedido);
         }
         return pedidoModel;
+    }
+
+    @Override
+    public void cancelarPedido(Long idPedido, Long idCliente) {
+        PedidoModel pedido = buscarPorIdPlato(idPedido);
+
+        if (!pedido.getIdCliente().equals(idCliente)) {
+            throw new PedidoInvalidoException(PEDIDO_DIFERENTE);
+        }
+
+        if (!EstadoPedido.PENDIENTE.name().equals(pedido.getEstado())) {
+            throw new PedidoInvalidoException(PEDIDO_PREPARACION);
+        }
+
+        persistencePort.asignarPedido(idPedido, null, CANCELADO.name());
     }
 
     private List<PedidoModel> listarPedidoPorIdRestaurante(Long idRestaurante, String estado, Long idUsuario){

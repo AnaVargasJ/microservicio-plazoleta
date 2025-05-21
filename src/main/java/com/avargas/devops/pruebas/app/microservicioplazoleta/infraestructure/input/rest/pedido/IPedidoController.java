@@ -14,5 +14,6 @@ public interface IPedidoController {
 
     ResponseEntity<?> asignarPedido(HttpServletRequest request,Long idPedido, String estado, UsuarioAutenticado usuarioAutenticado);
     ResponseEntity<?> entregarPedido(HttpServletRequest request,Long idPedido, String estado,String pin, UsuarioAutenticado usuarioAutenticado);
+    ResponseEntity<?> cancelarPedido(HttpServletRequest request,Long idPedido, UsuarioAutenticado usuarioAutenticado);
 
 }

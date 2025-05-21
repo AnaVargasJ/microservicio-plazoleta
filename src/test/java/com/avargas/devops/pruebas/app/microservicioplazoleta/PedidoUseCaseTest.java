@@ -197,5 +197,55 @@ class PedidoUseCaseTest {
         PedidoModel result = pedidoUseCase.buscarPorIdPlato(1L);
         assertEquals(pedido, result);
     }
+
+    @Test
+    @Order(14)
+    void cancelarPedido_exitoso() {
+        PedidoModel pedido = PedidoModel.builder()
+                .id(1L)
+                .estado("PENDIENTE")
+                .idCliente(99L)
+                .build();
+
+        when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
+
+        assertDoesNotThrow(() -> pedidoUseCase.cancelarPedido(1L, 99L));
+        verify(pedidoPersistencePort).asignarPedido(1L, null, "CANCELADO");
+    }
+
+    @Test
+    @Order(15)
+    void cancelarPedido_estadoNoPendiente_lanzaExcepcion() {
+        PedidoModel pedido = PedidoModel.builder()
+                .id(1L)
+                .estado("EN_PREPARACION")
+                .idCliente(99L)
+                .build();
+
+        when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
+
+        PedidoInvalidoException exception = assertThrows(PedidoInvalidoException.class,
+                () -> pedidoUseCase.cancelarPedido(1L, 99L));
+
+        assertEquals("Lo sentimos, tu pedido ya está en preparación y no puede cancelarse", exception.getMessage());
+    }
+
+    @Test
+    @Order(16)
+    void cancelarPedido_idClienteIncorrecto_lanzaExcepcion() {
+        PedidoModel pedido = PedidoModel.builder()
+                .id(1L)
+                .estado("PENDIENTE")
+                .idCliente(88L)
+                .build();
+
+        when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
+
+        PedidoInvalidoException exception = assertThrows(PedidoInvalidoException.class,
+                () -> pedidoUseCase.cancelarPedido(1L, 99L));
+
+        assertEquals("No puedes cancelar un pedido que no es tuyo.", exception.getMessage());
+    }
+
 }
 
