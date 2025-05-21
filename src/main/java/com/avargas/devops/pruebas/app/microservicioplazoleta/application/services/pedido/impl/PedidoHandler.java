@@ -10,6 +10,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.I
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.EstadoPedido;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class PedidoHandler implements IPedidoHandler {
     private final IPedidoServicePort pedidoServicePort;
     private final IPagePedidoResponseMapper iPageResponseMapper;
     private final INotificacionServicePort notificacionServicePort;
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
     @Override
     public void crearPedidos(PedidoRequestDTO dto) {
         PedidoModel pedidoModel = pedidoRequestMapper.toModel(dto);
@@ -36,9 +39,12 @@ public class PedidoHandler implements IPedidoHandler {
 
     @Override
     public void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario) {
-        if (String.valueOf(EstadoPedido.LISTO).equals(estado)){
-            Boolean notificar = notificacionServicePort.notificarUsuario(request,idUsuario,estado);
-        }
-        pedidoServicePort.asignarPedido(idPedido,estado, idUsuario);
+        String token = request.getHeader(AUTHORIZATION_HEADER);
+        pedidoServicePort.asignarPedido(token,idPedido,estado, idUsuario, null);
+    }
+
+    @Override
+    public void asignarPedidoPin(Long idPedido, String estado, Long idUsuario, String pin) {
+        pedidoServicePort.asignarPedido(null,idPedido,estado, idUsuario, pin);
     }
 }

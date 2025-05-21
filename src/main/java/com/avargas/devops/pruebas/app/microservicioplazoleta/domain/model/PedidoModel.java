@@ -20,6 +20,7 @@ public class PedidoModel {
     private String estado;
     private Long idCliente;
     private Long idChef;
+    private String pinSeguridad;
     private RestauranteModel restauranteModel;
     private List<PedidoPlatoModel> platos = new ArrayList<>();
 }

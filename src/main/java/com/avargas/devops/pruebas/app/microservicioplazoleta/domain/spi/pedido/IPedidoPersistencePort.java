@@ -13,6 +13,7 @@ public interface IPedidoPersistencePort {
     PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante,int page, int size, Long idUsuario) ;
 
     void asignarPedido(Long idPedido, Long idUsuario, String estado);
+    void asignarPinSeguridad(Long idPedido, String estado, String pinSeguridad);
 
     PedidoModel buscarPedidoPorId(Long idPedido);
    List<PedidoModel> buscarPedidosPorIdRestaurante(Long idRestaurante);

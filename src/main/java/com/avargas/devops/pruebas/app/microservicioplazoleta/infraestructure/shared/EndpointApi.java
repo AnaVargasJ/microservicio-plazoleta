@@ -13,6 +13,7 @@ public interface EndpointApi {
     String CREATE_PEDIDOS = "/crearPedido";
 
     String ASIGNAR_PEDIDOS = "/pedidos/{id}/asignar/{estado}";
+    String ENTREGAR_PEDIDO = "/pedidos/{id}/entregar/{estado}/cliente/{pin}";
 
     String UPDATE_PLATO = "/modificarPlato/{idPlato}";
 

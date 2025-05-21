@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.configuration;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.categorias.ICategoriaServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.platos.IPlatoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.RestauranteServicePort;
@@ -13,6 +14,8 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.cate
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.pedido.PedidoUseCase;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.platos.PlatoUseCase;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante.RestauranteUseCase;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter.NotificacionServiceAdapter;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.categorias.CategoriaJpaAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.pedido.PedidoJpaAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.pedidoplato.PedidoPlatoJpaAdapter;
@@ -104,13 +107,22 @@ public class BeanConfiguration {
         );
     }
 
+    @Bean
+    public INotificacionServicePort notificacionServicePort(GenericHttpClient genericHttpClient) {
+        return new NotificacionServiceAdapter(genericHttpClient);
+    }
+
 
 
     @Bean
-    public IPedidoServicePort iPedidoServicePort(){
-        return new PedidoUseCase(pedidoPersistencePort(), platoPersistencePort(), pedidoPlatoPersistencePort());
+    public IPedidoServicePort iPedidoServicePort(GenericHttpClient genericHttpClient){
+        return new PedidoUseCase(
+                pedidoPersistencePort(),
+                platoPersistencePort(),
+                pedidoPlatoPersistencePort(),
+                notificacionServicePort(genericHttpClient)
+        );
     }
-
 
 
 

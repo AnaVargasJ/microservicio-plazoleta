@@ -21,8 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.DESC_ESTADO_PEDIDO;
-import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.DESC_ID_PEDIDO;
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
 @RestController
 @RequestMapping(EndpointApi.BASE_PATH_PEDIDOS)
@@ -74,7 +73,7 @@ public class PedidoController implements IPedidoController {
 
         return ResponseEntity.ok(
                 ResponseUtil.success(SwaggerMessagesConstants.PEDIDO_LISTAS_ESTADO + estado + SwaggerMessagesConstants.PEDIDO_LISTAS_RESTAURANTE + idRestaurante,
-                        pedidoHandler.obtenerListaPedidosPorEstado(estado, idRestaurante, page, size , usuarioAutenticado.getId())));
+                        pedidoHandler.obtenerListaPedidosPorEstado(estado, idRestaurante, page, size, usuarioAutenticado.getId())));
     }
 
     @Override
@@ -90,12 +89,12 @@ public class PedidoController implements IPedidoController {
     })
     @PreAuthorize("hasRole('ROLE_EMP')")
     public ResponseEntity<?> asignarPedido(HttpServletRequest request,
-            @Parameter(description = DESC_ID_PEDIDO, required = true)
-            @PathVariable("id") Long idPedido,
-            @Parameter(description = DESC_ESTADO_PEDIDO, required = true)
-            @PathVariable String estado,
-            @Parameter(hidden = true)
-            @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
+                                           @Parameter(description = DESC_ID_PEDIDO, required = true)
+                                           @PathVariable("id") Long idPedido,
+                                           @Parameter(description = DESC_ESTADO_PEDIDO, required = true)
+                                           @PathVariable String estado,
+                                           @Parameter(hidden = true)
+                                           @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
     ) {
 
         pedidoHandler.asignarPedido(request, idPedido, estado, usuarioAutenticado.getId());
@@ -107,6 +106,36 @@ public class PedidoController implements IPedidoController {
                 HttpStatus.OK
         );
 
+    }
+
+    @Override
+    @PutMapping(EndpointApi.ENTREGAR_PEDIDO)
+    @Operation(summary = SwaggerConstants.OP_ENTREGAR_PEDIDO_SUMMARY,
+            description = SwaggerConstants.OP_ENTREGAR_PEDIDO_DESC)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    @PreAuthorize("hasRole('ROLE_EMP')")
+    public ResponseEntity<?> entregarPedido(HttpServletRequest request,
+                                            @Parameter(description = DESC_ID_PEDIDO, required = true)
+                                            @PathVariable("id") Long idPedido,
+                                            @Parameter(description = DESC_ESTADO_PEDIDO, required = true, example = "ENTREGADO")
+                                            @PathVariable String estado,
+                                            @Parameter(description = DESC_PIN_PEDIDO, required = true)
+                                            @PathVariable String pin,
+                                            @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
+        pedidoHandler.asignarPedidoPin( idPedido, estado,  usuarioAutenticado.getId(), pin);
+        return new ResponseEntity<>(
+                ResponseUtil.response(
+                        SwaggerMessagesConstants.ENTREGADO_USUARIO,
+                        HttpStatus.OK.value()
+                ),
+                HttpStatus.OK
+        );
     }
 
 }
