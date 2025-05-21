@@ -2,13 +2,11 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.ped
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pedido.PedidoInvalidoException;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.RestauranteDataException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.restaurante.RestaurantePersistencePort;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -66,6 +64,8 @@ public class PedidoUseCase implements IPedidoServicePort {
         if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario))
             throw new PedidoInvalidoException( NO_EXISTE_EMPLEADO);
 
+
+
         persistencePort.asignarPedido(idPedido, idUsuario, estado);
     }
 
@@ -96,4 +96,6 @@ public class PedidoUseCase implements IPedidoServicePort {
 
         return pedidoModels;
     }
+
+
 }

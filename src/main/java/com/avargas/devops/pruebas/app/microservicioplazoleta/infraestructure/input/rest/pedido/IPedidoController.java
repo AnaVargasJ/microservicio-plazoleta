@@ -11,6 +11,6 @@ public interface IPedidoController {
     ResponseEntity<?> crearPedido(HttpServletRequest request, PedidoRequestDTO pedidoRequestDTO);
     ResponseEntity<?> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size, UsuarioAutenticado usuarioAutenticado);
 
-    ResponseEntity<?> asignarPedido(Long idPedido, String estado, UsuarioAutenticado usuarioAutenticado);
+    ResponseEntity<?> asignarPedido(HttpServletRequest request,Long idPedido, String estado, UsuarioAutenticado usuarioAutenticado);
 
 }
