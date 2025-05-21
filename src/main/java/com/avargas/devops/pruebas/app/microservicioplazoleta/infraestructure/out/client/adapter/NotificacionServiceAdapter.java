@@ -3,7 +3,6 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.ou
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,10 +11,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-@Component
+
 @RequiredArgsConstructor
 public class NotificacionServiceAdapter implements INotificacionServicePort {
 
@@ -32,12 +30,12 @@ public class NotificacionServiceAdapter implements INotificacionServicePort {
     private static final int CODIGO_EXITO = 200;
 
     @Override
-    public Boolean notificarUsuario(HttpServletRequest request, Long idUsuario, String mensaje) {
-        String token = TokenJwtConfig.PREFIX_TOKEN + request.getHeader(AUTHORIZATION_HEADER);
+    public Boolean notificarUsuario(String token, Long idUsuario, String mensaje) {
+
         String url = this.urlPropietarios + EndpointApi.ENVIAR_NOTIFICACION_ID_USUARIO;
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-        String finalUrl = builder.buildAndExpand(idUsuario, crearPinSeguridad()).toUriString();
+        String finalUrl = builder.buildAndExpand(idUsuario, mensaje).toUriString();
 
         Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, token);
         Map<String, Object> response = genericHttpClient.sendRequest(finalUrl, HttpMethod.POST, null, headers);
@@ -54,8 +52,5 @@ public class NotificacionServiceAdapter implements INotificacionServicePort {
         return Boolean.TRUE;
     }
 
-    private String crearPinSeguridad() {
-        int pin = (int) (Math.random() * 10_000);
-        return String.format("%04d", pin);
-    }
+
 }

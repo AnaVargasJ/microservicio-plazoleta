@@ -4,5 +4,5 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface INotificacionServicePort {
     
-    Boolean notificarUsuario(HttpServletRequest request, Long idUsuario, String mensaje);
+    Boolean notificarUsuario(String token, Long idUsuario, String mensaje);
 }

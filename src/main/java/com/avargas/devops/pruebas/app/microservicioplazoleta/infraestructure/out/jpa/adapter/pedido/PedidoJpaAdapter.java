@@ -77,6 +77,11 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
     }
 
     @Override
+    public void asignarPinSeguridad(Long idPedido, String estado, String pinSeguridad) {
+        int actualizarPedidosPinSeguridad = pedidoRepository.asignarPinSeguridad(idPedido, estado, pinSeguridad);
+    }
+
+    @Override
     public PedidoModel buscarPedidoPorId(Long idPedido) {
         Optional<PedidoEntity> filtrarPorId = pedidoRepository.findById(idPedido);
         return filtrarPorId.map(entityMapper::toModel).orElseGet(null);

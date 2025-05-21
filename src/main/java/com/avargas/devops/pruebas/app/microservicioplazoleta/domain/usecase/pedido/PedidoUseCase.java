@@ -21,6 +21,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     private final IPedidoPersistencePort persistencePort;
     private final PlatoPersistencePort platoPersistencePort;
     private final IPedidoPlatoPersistencePort pedidoPlatoPersistencePort;
+    private final INotificacionServicePort notificacionServicePort;
 
     @Override
     public void crearPedido(PedidoModel pedidoModel) {
@@ -58,16 +59,38 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void asignarPedido(Long idPedido, String estado, Long idUsuario) {
+    public void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado) {
         PedidoModel pedidoModel = buscarPorIdPlato(idPedido);
 
-        if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario))
-            throw new PedidoInvalidoException( NO_EXISTE_EMPLEADO);
+        if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario)) {
+            throw new PedidoInvalidoException(NO_EXISTE_EMPLEADO);
+        }
 
+        if (EstadoPedido.LISTO.name().equals(estado) && token!=null) {
+            String pinSeguridad = crearPinSeguridad();
+            Boolean notificado = notificacionServicePort.notificarUsuario(token, idUsuario, pinSeguridad);
+            persistencePort.asignarPinSeguridad(idPedido, estado, pinSeguridad);
+            return;
+        }
 
+        if (EstadoPedido.ENTREGADO.name().equals(estado)) {
+            if (!EstadoPedido.LISTO.name().equals(pedidoModel.getEstado())) {
+                throw new PedidoInvalidoException(PEDIDO_DISTINTO_LISTO);
+            }
+            if (pedidoModel.getPinSeguridad() == null || !pedidoModel.getPinSeguridad().equals(pinIngresado)) {
+                throw new PedidoInvalidoException(PIN_INCORRECTO);
+            }
+            persistencePort.asignarPedido(idPedido, idUsuario, estado);
+            return;
+        }
+
+        if (EstadoPedido.ENTREGADO.name().equals(pedidoModel.getEstado())) {
+            throw new PedidoInvalidoException(PEDIDO_ENTREGADO);
+        }
 
         persistencePort.asignarPedido(idPedido, idUsuario, estado);
     }
+
 
     @Override
     public PedidoModel buscarPorIdPlato(Long idPedido) {
@@ -95,6 +118,11 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new PedidoInvalidoException(EMPLEADO_NO_ASOCIADO.getMessage());
 
         return pedidoModels;
+    }
+
+    private String crearPinSeguridad() {
+        int pin = (int) (Math.random() * 10_000);
+        return String.format("%04d", pin);
     }
 
 

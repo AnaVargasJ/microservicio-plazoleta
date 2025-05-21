@@ -31,6 +31,7 @@ public class PedidoEntityMapper implements IPedidoEntityMapper {
                 .fecha(model.getFecha())
                 .idChef(model.getIdChef())
                 .idCliente(model.getIdCliente())
+                .pinSeguridad(model.getPinSeguridad())
                 .restauranteEntity(
                         model.getRestauranteModel() != null
                                 ? restauranteMapper.toRestauranteEntity(model.getRestauranteModel())
@@ -52,6 +53,7 @@ public class PedidoEntityMapper implements IPedidoEntityMapper {
                 .fecha(entity.getFecha())
                 .idChef(entity.getIdChef())
                 .idCliente(entity.getIdCliente())
+                .pinSeguridad(entity.getPinSeguridad())
                 .restauranteModel(
                         entity.getRestauranteEntity() != null
                                 ? restauranteMapper.toRestauranteModel(entity.getRestauranteEntity())
