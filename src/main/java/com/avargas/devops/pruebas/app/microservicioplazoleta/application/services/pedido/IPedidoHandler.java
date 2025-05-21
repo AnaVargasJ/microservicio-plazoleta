@@ -4,6 +4,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.req
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PedidoResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface IPedidoHandler {
 
@@ -11,6 +12,6 @@ public interface IPedidoHandler {
 
     PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size, Long idUsuario);
 
-    void asignarPedido(Long idPedido,String estado, Long idUsuario);
+    void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario);
 
 }

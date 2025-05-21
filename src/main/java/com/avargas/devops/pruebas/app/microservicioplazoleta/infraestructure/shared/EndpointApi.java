@@ -22,5 +22,7 @@ public interface EndpointApi {
 
     String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
 
+    String ENVIAR_NOTIFICACION_ID_USUARIO =  "/enviar-notificacion/{idUsuario}/pedido/{mensaje}";
+
 
 }

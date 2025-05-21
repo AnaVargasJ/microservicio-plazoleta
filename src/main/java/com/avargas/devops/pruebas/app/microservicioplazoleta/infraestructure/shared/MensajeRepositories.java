@@ -13,4 +13,8 @@ public class MensajeRepositories {
     public static final String EMPLEADO_ASOCIADO = "El empleado no tiene restaurante asociado.";
 
     public static String NO_EXISTE_PEDIDO_RESTAURANTE = "No existen pedidos en el restaurante ";
+
+    public static String ERROR_SERVICIO_MENSAJERIA = "Error al consumir el servicio de mensajeria";
+    public static String ERROR_RESPUESTA_MENSAJERIA = "El servicio de notificación respondió con error.";
+
 }

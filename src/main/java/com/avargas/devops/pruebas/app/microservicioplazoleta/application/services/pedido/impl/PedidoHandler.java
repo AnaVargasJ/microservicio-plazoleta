@@ -6,8 +6,11 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.res
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.pedido.IPedidoRequestMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.pedido.impl.IPagePedidoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.pedido.IPedidoHandler;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.EstadoPedido;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ public class PedidoHandler implements IPedidoHandler {
     private final IPedidoRequestMapper pedidoRequestMapper;
     private final IPedidoServicePort pedidoServicePort;
     private final IPagePedidoResponseMapper iPageResponseMapper;
+    private final INotificacionServicePort notificacionServicePort;
     @Override
     public void crearPedidos(PedidoRequestDTO dto) {
         PedidoModel pedidoModel = pedidoRequestMapper.toModel(dto);
@@ -31,7 +35,10 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public void asignarPedido(Long idPedido, String estado, Long idUsuario) {
+    public void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario) {
+        if (String.valueOf(EstadoPedido.LISTO).equals(estado)){
+            Boolean notificar = notificacionServicePort.notificarUsuario(request,idUsuario,estado);
+        }
         pedidoServicePort.asignarPedido(idPedido,estado, idUsuario);
     }
 }

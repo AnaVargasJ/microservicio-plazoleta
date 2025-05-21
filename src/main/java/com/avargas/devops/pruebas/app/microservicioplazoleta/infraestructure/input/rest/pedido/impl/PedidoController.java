@@ -89,7 +89,7 @@ public class PedidoController implements IPedidoController {
             @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     @PreAuthorize("hasRole('ROLE_EMP')")
-    public ResponseEntity<?> asignarPedido(
+    public ResponseEntity<?> asignarPedido(HttpServletRequest request,
             @Parameter(description = DESC_ID_PEDIDO, required = true)
             @PathVariable("id") Long idPedido,
             @Parameter(description = DESC_ESTADO_PEDIDO, required = true)
@@ -98,7 +98,7 @@ public class PedidoController implements IPedidoController {
             @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
     ) {
 
-        pedidoHandler.asignarPedido(idPedido, estado, usuarioAutenticado.getId());
+        pedidoHandler.asignarPedido(request, idPedido, estado, usuarioAutenticado.getId());
         return new ResponseEntity<>(
                 ResponseUtil.response(
                         SwaggerMessagesConstants.PEDIDO_USUARIO_CORREO + usuarioAutenticado.getUsername(),
