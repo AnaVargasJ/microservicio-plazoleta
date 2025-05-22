@@ -9,9 +9,9 @@ public interface IPedidoServicePort {
 
     PageModel<PedidoModel> obtenerPedidosPorEstadoYRestaurante (String estado, Long idRestaurante, int page, int size , Long idUsuario) ;
 
-    void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado);
+    void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado, String correo);
 
     PedidoModel buscarPorIdPlato(Long idPedido);
 
-    void cancelarPedido(Long idPedido, Long idCliente);
+    void cancelarPedido(Long idPedido, Long idCliente, String correoCliente, String token);
 }

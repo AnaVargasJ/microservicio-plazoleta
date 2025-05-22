@@ -2,6 +2,7 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.ou
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.UsuarioServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.restaurante.ValidacionNegocioException;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.exception.ErrorException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
-@Component
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi.BUSCAR_USUARIO_POR_ID;
+
+
 @RequiredArgsConstructor
 public class UsuarioServiceAdapter implements UsuarioServicePort {
 
@@ -21,6 +24,9 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
 
     @Value("${microserviciopropietarios}")
     private String urlPropietarios;
+
+    private static final String KEY_RESPUESTA = "respuesta";
+    private static final String KEY_CELULAR = "correo";
 
     @Override
     public Long usuarioEsPropietario(String correo, HttpServletRequest request) {
@@ -64,5 +70,30 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
             return ((Number) idUsuario).longValue();
         }
         throw new ValidacionNegocioException("El rol '" + rolStr + "' no tiene permitido crear solicitudes.");
+    }
+
+    @Override
+    public String obtenerCorreo(Long idUsuario, String token) {
+        String url = this.urlPropietarios + BUSCAR_USUARIO_POR_ID;
+        String finalUrl = UriComponentsBuilder.fromHttpUrl(url).buildAndExpand(idUsuario).toUriString();
+        Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, token);
+        Map<String, Object> response = genericHttpClient.sendRequest(finalUrl, HttpMethod.GET, null, headers);
+
+        if (response == null || !response.containsKey(KEY_RESPUESTA)) {
+            throw new ValidacionNegocioException(ErrorException.DATA_ERROR.getMessage() + idUsuario);
+        }
+
+        Object respuestaObj = response.get(KEY_RESPUESTA);
+        if (!(respuestaObj instanceof Map)) {
+            throw new ValidacionNegocioException(ErrorException.RESPONSE_ERROR.getMessage());
+        }
+
+        Map<?, ?> respuesta = (Map<?, ?>) respuestaObj;
+        Object correo = respuesta.get(KEY_CELULAR);
+        if (!(correo instanceof String)) {
+            throw new ValidacionNegocioException(ErrorException.ERROR_DATA_TYPE.getMessage());
+        }
+
+        return correo.toString();
     }
 }

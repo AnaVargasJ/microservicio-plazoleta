@@ -3,8 +3,10 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.co
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.categorias.ICategoriaServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.ITrazabilidadServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.platos.IPlatoServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.RestauranteServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.UsuarioServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.categorias.CategoriaPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
@@ -15,6 +17,8 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.pedi
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.platos.PlatoUseCase;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.restaurante.RestauranteUseCase;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter.NotificacionServiceAdapter;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter.TrazabilidadServiceAdapter;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.adapter.UsuarioServiceAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.categorias.CategoriaJpaAdapter;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.jpa.adapter.pedido.PedidoJpaAdapter;
@@ -51,54 +55,55 @@ public class BeanConfiguration {
     private final IPedidoEntityMapper pedidoEntityMapper;
     private final PedidoPlatoRepository pedidoPlatoRepository;
     private final PedidoPlatoEntityMapper pedidoPlatoEntityMapper;
+
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 
     @Bean
-    public RestaurantePersistencePort restaurantePersistencePort(){
+    public RestaurantePersistencePort restaurantePersistencePort() {
         return new RestauranteJpaAdapter(restauranteRepository, restauranteEntityMapper);
     }
 
     @Bean
-    public RestauranteServicePort restauranteServicePort(){
+    public RestauranteServicePort restauranteServicePort() {
         return new RestauranteUseCase(restaurantePersistencePort());
     }
 
     @Bean
-    public PlatoPersistencePort platoPersistencePort(){
+    public PlatoPersistencePort platoPersistencePort() {
         return new PlatoJpaAdapter(platoRepository, iPlatoEntityMapper);
     }
 
     @Bean
-    public IPlatoServicePort iPlatoServicePort(){
+    public IPlatoServicePort iPlatoServicePort() {
         return new PlatoUseCase(platoPersistencePort());
     }
 
     @Bean
-    public CategoriaPersistencePort categoriaPersistencePort(){
+    public CategoriaPersistencePort categoriaPersistencePort() {
         return new CategoriaJpaAdapter(categoriaRepository, iCategoriaEntityMapper);
     }
 
     @Bean
-    public ICategoriaServicePort iCategoriaServicePort(){
+    public ICategoriaServicePort iCategoriaServicePort() {
         return new CategoriaUseCase(categoriaPersistencePort());
     }
 
     @Bean
-    public IPedidoPersistencePort pedidoServicePort(){
+    public IPedidoPersistencePort pedidoServicePort() {
         return new PedidoJpaAdapter(pedidoRepository, pedidoEntityMapper);
 
     }
 
     @Bean
-    public IPedidoPersistencePort pedidoPersistencePort(){
+    public IPedidoPersistencePort pedidoPersistencePort() {
         return new PedidoJpaAdapter(pedidoRepository, pedidoEntityMapper);
     }
 
     @Bean
-    public IPedidoPlatoPersistencePort pedidoPlatoPersistencePort(){
+    public IPedidoPlatoPersistencePort pedidoPlatoPersistencePort() {
         return new PedidoPlatoJpaAdapter(
                 pedidoPlatoRepository,
                 pedidoRepository,
@@ -113,17 +118,26 @@ public class BeanConfiguration {
     }
 
 
+    @Bean
+    public ITrazabilidadServicePort trazabilidadServicePort(GenericHttpClient genericHttpClient) {
+        return new TrazabilidadServiceAdapter(genericHttpClient);
+    }
 
     @Bean
-    public IPedidoServicePort iPedidoServicePort(GenericHttpClient genericHttpClient){
+    public IPedidoServicePort iPedidoServicePort(GenericHttpClient genericHttpClient) {
         return new PedidoUseCase(
                 pedidoPersistencePort(),
                 platoPersistencePort(),
                 pedidoPlatoPersistencePort(),
-                notificacionServicePort(genericHttpClient)
-        );
+                notificacionServicePort(genericHttpClient),
+                trazabilidadServicePort(genericHttpClient),
+                usuarioServicePort(genericHttpClient));
     }
 
+    @Bean
+    public UsuarioServicePort usuarioServicePort(GenericHttpClient genericHttpClient) {
+        return new UsuarioServiceAdapter(genericHttpClient);
+    }
 
 
 }

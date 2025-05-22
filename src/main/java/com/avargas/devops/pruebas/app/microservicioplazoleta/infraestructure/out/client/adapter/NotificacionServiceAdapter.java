@@ -22,8 +22,9 @@ public class NotificacionServiceAdapter implements INotificacionServicePort {
     @Value("${servicioNotificaciones}")
     private String urlPropietarios;
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+
     private static final String ERROR_SERVICIO_MENSAJERIA = "No se obtuvo una respuesta válida del servicio de mensajería.";
+
     private static final String ERROR_RESPUESTA_MENSAJERIA = "El servicio de mensajería respondió con error.";
 
     private static final String CODIGO = "codigo";

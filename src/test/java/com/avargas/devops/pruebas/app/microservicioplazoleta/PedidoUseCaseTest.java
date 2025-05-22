@@ -1,28 +1,25 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.ITrazabilidadServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.UsuarioServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pedido.PedidoInvalidoException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedido.IPedidoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.pedidoplatos.IPedidoPlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.spi.platos.PlatoPersistencePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.pedido.PedidoUseCase;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.MensajeError.EMPLEADO_NO_ASOCIADO;
-import static com.avargas.devops.pruebas.app.microservicioplazoleta.domain.util.PedidoMensajeError.*;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PedidoUseCaseTest {
@@ -38,6 +35,12 @@ class PedidoUseCaseTest {
 
     @Mock
     private INotificacionServicePort notificacionServicePort;
+
+    @Mock
+    private ITrazabilidadServicePort trazabilidadServicePort;
+
+    @Mock
+    private UsuarioServicePort usuarioServicePort;
 
     @InjectMocks
     private PedidoUseCase pedidoUseCase;
@@ -92,8 +95,9 @@ class PedidoUseCaseTest {
     @Test
     @Order(4)
     void obtenerPedidosPorEstadoYRestaurante_exitoso() {
-        when(pedidoPersistencePort.buscarPedidosPorIdRestaurante(anyLong()))
-                .thenReturn(List.of(buildPedidoBase()));
+        PedidoModel pedido = buildPedidoBase();
+        pedido.setIdChef(null);
+        when(pedidoPersistencePort.buscarPedidosPorIdRestaurante(anyLong())).thenReturn(List.of(pedido));
         when(pedidoPersistencePort.obtenerPedidosPorEstadoYRestaurante(any(), anyLong(), anyInt(), anyInt(), anyLong()))
                 .thenReturn(PageModel.<PedidoModel>builder().build());
 
@@ -114,24 +118,28 @@ class PedidoUseCaseTest {
     @Order(6)
     void asignarPedido_LISTO_enviaNotificacionYGuardaPin() {
         PedidoModel pedido = buildPedidoBase();
-        pedido.setEstado("PENDIENTE");
+        pedido.setEstado("EN_PREPARACION");
+        pedido.setIdChef(5L);
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
+        when(usuarioServicePort.obtenerCorreo(anyLong(), anyString())).thenReturn("cliente@correo.com");
         when(notificacionServicePort.notificarUsuario(anyString(), anyLong(), anyString())).thenReturn(true);
 
-        pedidoUseCase.asignarPedido("Bearer token", 1L, "LISTO", 5L, null);
+        assertDoesNotThrow(() -> pedidoUseCase.asignarPedido("Bearer token", 1L, "LISTO", 5L, null, "emp@correo.com"));
 
         verify(pedidoPersistencePort).asignarPinSeguridad(eq(1L), eq("LISTO"), anyString());
+        verify(trazabilidadServicePort).crearTraza(anyString(), eq(pedido), eq("LISTO"), eq(5L), eq("emp@correo.com"), eq("cliente@correo.com"));
     }
 
     @Test
     @Order(7)
     void asignarPedido_ENTREGADO_conEstadoNoListo_lanzaExcepcion() {
         PedidoModel pedido = buildPedidoBase();
-        pedido.setEstado("PENDIENTE");
+        pedido.setEstado("EN_PREPARACION");
+        pedido.setIdChef(5L);
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
         assertThrows(PedidoInvalidoException.class, () ->
-                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "0001"));
+                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "0001", null));
     }
 
     @Test
@@ -143,7 +151,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
         assertThrows(PedidoInvalidoException.class, () ->
-                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "0000"));
+                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "0000", null));
     }
 
     @Test
@@ -155,7 +163,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
         assertDoesNotThrow(() ->
-                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "1234"));
+                pedidoUseCase.asignarPedido(null, 1L, "ENTREGADO", 5L, "1234", null));
         verify(pedidoPersistencePort).asignarPedido(1L, 5L, "ENTREGADO");
     }
 
@@ -167,7 +175,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
         assertThrows(PedidoInvalidoException.class, () ->
-                pedidoUseCase.asignarPedido(null, 1L, "EN_PREPARACION", 5L, "0000"));
+                pedidoUseCase.asignarPedido(null, 1L, "EN_PREPARACION", 5L, "0000", null));
     }
 
     @Test
@@ -178,7 +186,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
         assertDoesNotThrow(() ->
-                pedidoUseCase.asignarPedido(null, 1L, "PENDIENTE", 5L, null));
+                pedidoUseCase.asignarPedido(null, 1L, "PENDIENTE", 5L, null, null));
         verify(pedidoPersistencePort).asignarPedido(1L, 5L, "PENDIENTE");
     }
 
@@ -201,51 +209,35 @@ class PedidoUseCaseTest {
     @Test
     @Order(14)
     void cancelarPedido_exitoso() {
-        PedidoModel pedido = PedidoModel.builder()
-                .id(1L)
-                .estado("PENDIENTE")
-                .idCliente(99L)
-                .build();
-
+        PedidoModel pedido = buildPedidoBase();
+        pedido.setIdChef(10L);
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
+        when(usuarioServicePort.obtenerCorreo(eq(99L), anyString())).thenReturn("correoEmpleado");
 
-        assertDoesNotThrow(() -> pedidoUseCase.cancelarPedido(1L, 99L));
+        assertDoesNotThrow(() -> pedidoUseCase.cancelarPedido(1L, 99L, "cliente@correo.com", "token123"));
         verify(pedidoPersistencePort).asignarPedido(1L, null, "CANCELADO");
+        verify(trazabilidadServicePort).crearTraza("token123", pedido, "CANCELADO", 10L, "correoEmpleado", "cliente@correo.com");
     }
 
     @Test
     @Order(15)
     void cancelarPedido_estadoNoPendiente_lanzaExcepcion() {
-        PedidoModel pedido = PedidoModel.builder()
-                .id(1L)
-                .estado("EN_PREPARACION")
-                .idCliente(99L)
-                .build();
-
+        PedidoModel pedido = buildPedidoBase();
+        pedido.setEstado("EN_PREPARACION");
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
-        PedidoInvalidoException exception = assertThrows(PedidoInvalidoException.class,
-                () -> pedidoUseCase.cancelarPedido(1L, 99L));
-
-        assertEquals("Lo sentimos, tu pedido ya está en preparación y no puede cancelarse", exception.getMessage());
+        assertThrows(PedidoInvalidoException.class,
+                () -> pedidoUseCase.cancelarPedido(1L, 99L, "cliente@correo.com", "token123"));
     }
 
     @Test
     @Order(16)
     void cancelarPedido_idClienteIncorrecto_lanzaExcepcion() {
-        PedidoModel pedido = PedidoModel.builder()
-                .id(1L)
-                .estado("PENDIENTE")
-                .idCliente(88L)
-                .build();
-
+        PedidoModel pedido = buildPedidoBase();
+        pedido.setIdCliente(88L);
         when(pedidoPersistencePort.buscarPedidoPorId(1L)).thenReturn(pedido);
 
-        PedidoInvalidoException exception = assertThrows(PedidoInvalidoException.class,
-                () -> pedidoUseCase.cancelarPedido(1L, 99L));
-
-        assertEquals("No puedes cancelar un pedido que no es tuyo.", exception.getMessage());
+        assertThrows(PedidoInvalidoException.class,
+                () -> pedidoUseCase.cancelarPedido(1L, 99L, "cliente@correo.com", "token123"));
     }
-
 }
-

@@ -37,18 +37,19 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario) {
+    public void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String correo) {
         String token = request.getHeader(AUTHORIZATION_HEADER);
-        pedidoServicePort.asignarPedido(token,idPedido,estado, idUsuario, null);
+        pedidoServicePort.asignarPedido(token,idPedido,estado, idUsuario, null, correo);
     }
 
     @Override
-    public void asignarPedidoPin(Long idPedido, String estado, Long idUsuario, String pin) {
-        pedidoServicePort.asignarPedido(null,idPedido,estado, idUsuario, pin);
+    public void asignarPedidoPin(HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String pin, String correo) {
+        String token = request.getHeader(AUTHORIZATION_HEADER);
+        pedidoServicePort.asignarPedido(token,idPedido,estado, idUsuario, pin, correo);
     }
 
     @Override
-    public void cancelarPedido(Long idPedido, Long idUsuario) {
-        pedidoServicePort.cancelarPedido(idPedido, idUsuario);
+    public void cancelarPedido( Long idPedido, Long idUsuario, String correoCliente, String token) {
+        pedidoServicePort.cancelarPedido(idPedido, idUsuario, correoCliente, token);
     }
 }
