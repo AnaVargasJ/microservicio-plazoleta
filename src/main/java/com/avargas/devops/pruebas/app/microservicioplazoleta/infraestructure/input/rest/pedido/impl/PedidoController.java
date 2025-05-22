@@ -4,6 +4,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.req
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.ResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.pedido.IPedidoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.input.rest.pedido.IPedidoController;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -128,7 +129,8 @@ public class PedidoController implements IPedidoController {
                                             @Parameter(description = DESC_PIN_PEDIDO, required = true)
                                             @PathVariable String pin,
                                             @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
-        pedidoHandler.asignarPedidoPin( idPedido, estado,  usuarioAutenticado.getId(), pin);
+
+        pedidoHandler.asignarPedidoPin(request, idPedido, estado,  usuarioAutenticado.getId(), pin, usuarioAutenticado.getUsername());
         return new ResponseEntity<>(
                 ResponseUtil.response(
                         SwaggerMessagesConstants.ENTREGADO_USUARIO,
@@ -153,7 +155,8 @@ public class PedidoController implements IPedidoController {
     public ResponseEntity<?> cancelarPedido(HttpServletRequest request,
                                             @Parameter(description = DESC_ID_PEDIDO, required = true)
                                             @PathVariable("id") Long idPedido, @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado) {
-        pedidoHandler.cancelarPedido(idPedido, usuarioAutenticado.getId());
+        String token = TokenJwtConfig.PREFIX_TOKEN+ request.getHeader("Authorization");
+        pedidoHandler.cancelarPedido(idPedido, usuarioAutenticado.getId(), usuarioAutenticado.getUsername(), token );
         return new ResponseEntity<>(
                 ResponseUtil.response(
                         SwaggerMessagesConstants.CANCELAR_PEDIDO,

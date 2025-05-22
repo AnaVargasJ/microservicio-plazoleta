@@ -18,6 +18,8 @@ public interface EndpointApi {
 
     String UPDATE_PLATO = "/modificarPlato/{idPlato}";
 
+
+
     String DISABLE_PLATO = "/plato/{id}/estado";
 
     String LIST_PLATOS = "/{idRestaurante}/platos";
@@ -25,6 +27,9 @@ public interface EndpointApi {
     String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
 
     String ENVIAR_NOTIFICACION_ID_USUARIO =  "/enviar-notificacion/{idUsuario}/pedido/{mensaje}";
+    String CREATE_TRAZABILIDAD = "/crearTrazabilidad";
+
+    String BUSCAR_USUARIO_POR_ID =  "/buscarPorIdUsuario/{idUsuario}";
 
 
 }

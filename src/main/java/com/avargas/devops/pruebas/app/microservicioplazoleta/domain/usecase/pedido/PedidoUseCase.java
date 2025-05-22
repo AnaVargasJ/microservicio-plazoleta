@@ -1,6 +1,8 @@
 package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.usecase.pedido;
 
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.IPedidoServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.ITrazabilidadServicePort;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.restaurante.UsuarioServicePort;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.exception.pedido.PedidoInvalidoException;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.*;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
@@ -23,6 +25,8 @@ public class PedidoUseCase implements IPedidoServicePort {
     private final PlatoPersistencePort platoPersistencePort;
     private final IPedidoPlatoPersistencePort pedidoPlatoPersistencePort;
     private final INotificacionServicePort notificacionServicePort;
+    private final ITrazabilidadServicePort trazabilidadServicePort;
+    private final UsuarioServicePort usuarioServicePort;
 
     @Override
     public void crearPedido(PedidoModel pedidoModel) {
@@ -60,8 +64,9 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado) {
+    public void asignarPedido(String token, Long idPedido, String estado, Long idUsuario, String pinIngresado,String correo) {
         PedidoModel pedidoModel = buscarPorIdPlato(idPedido);
+        String correoCliente = usuarioServicePort.obtenerCorreo(pedidoModel.getIdCliente(), token);
 
         if (pedidoModel.getIdChef() != null && !pedidoModel.getIdChef().equals(idUsuario)) {
             throw new PedidoInvalidoException(NO_EXISTE_EMPLEADO);
@@ -70,7 +75,9 @@ public class PedidoUseCase implements IPedidoServicePort {
         if (EstadoPedido.LISTO.name().equals(estado) && token!=null) {
             String pinSeguridad = crearPinSeguridad();
             Boolean notificado = notificacionServicePort.notificarUsuario(token, idUsuario, pinSeguridad);
+
             persistencePort.asignarPinSeguridad(idPedido, estado, pinSeguridad);
+            trazabilidadServicePort.crearTraza(token, pedidoModel,  estado,  pedidoModel.getIdChef(), correo, correoCliente);
             return;
         }
 
@@ -103,7 +110,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void cancelarPedido(Long idPedido, Long idCliente) {
+    public void cancelarPedido(Long idPedido, Long idCliente, String correoCliente, String token) {
         PedidoModel pedido = buscarPorIdPlato(idPedido);
 
         if (!pedido.getIdCliente().equals(idCliente)) {
@@ -113,8 +120,9 @@ public class PedidoUseCase implements IPedidoServicePort {
         if (!EstadoPedido.PENDIENTE.name().equals(pedido.getEstado())) {
             throw new PedidoInvalidoException(PEDIDO_PREPARACION);
         }
-
+        String correoEmpleado = usuarioServicePort.obtenerCorreo(pedido.getIdCliente(), token);
         persistencePort.asignarPedido(idPedido, null, CANCELADO.name());
+        trazabilidadServicePort.crearTraza(token, pedido,  CANCELADO.name(),  pedido.getIdChef(), correoEmpleado, correoCliente);
     }
 
     private List<PedidoModel> listarPedidoPorIdRestaurante(Long idRestaurante, String estado, Long idUsuario){
