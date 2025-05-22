@@ -19,7 +19,7 @@ public class NotificacionServiceAdapter implements INotificacionServicePort {
 
     private final IGenericHttpClient genericHttpClient;
 
-    @Value("${microservicioTrazabilidad}")
+    @Value("${servicioNotificaciones}")
     private String urlPropietarios;
 
 

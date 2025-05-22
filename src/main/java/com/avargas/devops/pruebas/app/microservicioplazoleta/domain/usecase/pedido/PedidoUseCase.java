@@ -74,7 +74,7 @@ public class PedidoUseCase implements IPedidoServicePort {
 
         if (EstadoPedido.LISTO.name().equals(estado) && token!=null) {
             String pinSeguridad = crearPinSeguridad();
-            Boolean notificado = notificacionServicePort.notificarUsuario(token, idUsuario, pinSeguridad);
+            Boolean notificado = notificacionServicePort.notificarUsuario(token, pedidoModel.getIdCliente(), pinSeguridad);
 
             persistencePort.asignarPinSeguridad(idPedido, estado, pinSeguridad);
             trazabilidadServicePort.crearTraza(token, pedidoModel,  estado,  pedidoModel.getIdChef(), correo, correoCliente);

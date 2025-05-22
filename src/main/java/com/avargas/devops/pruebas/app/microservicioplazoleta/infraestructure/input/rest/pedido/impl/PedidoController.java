@@ -98,7 +98,7 @@ public class PedidoController implements IPedidoController {
                                            @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
     ) {
 
-        pedidoHandler.asignarPedido(request, idPedido, estado, usuarioAutenticado.getId());
+        pedidoHandler.asignarPedido(request, idPedido, estado, usuarioAutenticado.getId(), usuarioAutenticado.getUsername());
         return new ResponseEntity<>(
                 ResponseUtil.response(
                         SwaggerMessagesConstants.PEDIDO_USUARIO_CORREO + usuarioAutenticado.getUsername(),

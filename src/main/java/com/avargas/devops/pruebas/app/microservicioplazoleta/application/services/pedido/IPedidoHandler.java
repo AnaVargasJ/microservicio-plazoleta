@@ -12,7 +12,7 @@ public interface IPedidoHandler {
 
     PageResponseDTO<PedidoResponseDTO> obtenerListaPedidosPorEstado(String estado, Long idRestaurante, int page, int size, Long idUsuario);
 
-    void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario);
+    void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String correo);
     void asignarPedidoPin( HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String pin, String correo);
     void cancelarPedido( Long idPedido, Long idUsuario, String correoCliente, String token);
 

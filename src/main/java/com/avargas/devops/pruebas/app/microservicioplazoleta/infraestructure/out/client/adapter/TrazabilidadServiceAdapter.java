@@ -34,9 +34,8 @@ public class TrazabilidadServiceAdapter implements ITrazabilidadServicePort {
 
         Map<String, Object> body = mapearPedidoATrazabilidad(pedidoModel, estadoNuevo, idEmpleado, correoEmpleado, correoCliente);
 
-        Map<String, String> headers = Map.of(
-                HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE
-        );
+        Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, token);
+
 
         Map<String, Object> response = genericHttpClient.sendRequest(url, HttpMethod.POST, body, headers);
 
