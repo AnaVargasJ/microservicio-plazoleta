@@ -3,6 +3,8 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PageModel;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.model.PedidoModel;
 
+import java.util.List;
+
 public interface IPedidoServicePort {
 
     void crearPedido(PedidoModel pedidoModel);
@@ -14,4 +16,6 @@ public interface IPedidoServicePort {
     PedidoModel buscarPorIdPlato(Long idPedido);
 
     void cancelarPedido(Long idPedido, Long idCliente, String correoCliente, String token);
+
+    List<PedidoModel> filtrarPedidosPorRestaurante(Long idRestaurant);
 }

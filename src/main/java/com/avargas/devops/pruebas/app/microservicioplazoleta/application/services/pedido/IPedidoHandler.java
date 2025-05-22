@@ -3,8 +3,9 @@ package com.avargas.devops.pruebas.app.microservicioplazoleta.application.servic
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.request.PedidoRequestDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PedidoResponseDTO;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.model.UsuarioAutenticado;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface IPedidoHandler {
 
@@ -15,5 +16,7 @@ public interface IPedidoHandler {
     void asignarPedido(HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String correo);
     void asignarPedidoPin( HttpServletRequest request, Long idPedido, String estado, Long idUsuario, String pin, String correo);
     void cancelarPedido( Long idPedido, Long idUsuario, String correoCliente, String token);
+
+    List<PedidoResponseDTO> filtrarPedidosPorRestaurante(Long idRestaurant);
 
 }

@@ -14,6 +14,7 @@ public interface EndpointApi {
 
     String ASIGNAR_PEDIDOS = "/pedidos/{id}/asignar/{estado}";
     String CANCELAR_PEDIDOS = "/pedidos/{id}/asignar";
+    String FILTRAR_PEDIDOS_ID_RESTAURANTE = "/pedidos/{idRestaurante}";
     String ENTREGAR_PEDIDO = "/pedidos/{id}/entregar/{estado}/cliente/{pin}";
 
     String UPDATE_PLATO = "/modificarPlato/{idPlato}";

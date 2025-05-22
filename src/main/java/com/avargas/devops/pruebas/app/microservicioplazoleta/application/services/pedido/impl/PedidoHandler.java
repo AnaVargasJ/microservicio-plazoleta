@@ -4,6 +4,7 @@ import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.req
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.dto.response.PedidoResponseDTO;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.pedido.IPedidoRequestMapper;
+import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.pedido.IPedidoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.mapper.pedido.impl.IPagePedidoResponseMapper;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.application.services.pedido.IPedidoHandler;
 import com.avargas.devops.pruebas.app.microservicioplazoleta.domain.api.pedido.INotificacionServicePort;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PedidoHandler implements IPedidoHandler {
@@ -22,6 +25,7 @@ public class PedidoHandler implements IPedidoHandler {
     private final IPedidoRequestMapper pedidoRequestMapper;
     private final IPedidoServicePort pedidoServicePort;
     private final IPagePedidoResponseMapper iPageResponseMapper;
+    private final IPedidoResponseMapper responseMapper;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     @Override
@@ -51,5 +55,10 @@ public class PedidoHandler implements IPedidoHandler {
     @Override
     public void cancelarPedido( Long idPedido, Long idUsuario, String correoCliente, String token) {
         pedidoServicePort.cancelarPedido(idPedido, idUsuario, correoCliente, token);
+    }
+
+    @Override
+    public List<PedidoResponseDTO> filtrarPedidosPorRestaurante(Long idRestaurant) {
+        return responseMapper.toModelList(pedidoServicePort.filtrarPedidosPorRestaurante(idRestaurant));
     }
 }

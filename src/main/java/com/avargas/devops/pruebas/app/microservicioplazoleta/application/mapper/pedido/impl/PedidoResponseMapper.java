@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PedidoResponseMapper implements IPedidoResponseMapper {
@@ -20,6 +22,14 @@ public class PedidoResponseMapper implements IPedidoResponseMapper {
                 .idChef(pedidoModel.getIdChef())
                 .build();
     }
+
+    @Override
+    public List<PedidoResponseDTO> toModelList(List<PedidoModel> pedidoModelList) {
+        return pedidoModelList.stream()
+                .map(this::toPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
 
     private String formatearFecha( LocalDateTime fecha){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

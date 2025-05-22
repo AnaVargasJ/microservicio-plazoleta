@@ -41,6 +41,7 @@ public final class SwaggerConstants {
     public static final String OP_ASIGNAR_PEDIDO_SUMMARY = "Asignar pedido a empleado";
     public static final String OP_ENTREGAR_PEDIDO_SUMMARY = "Validad el pedido por pin";
     public static final String OP_CANCELAR_PEDIDO_SUMMARY = "Cancelo el pedido en estado pendiente";
+    public static final String OP_FILTRAR_PEDIDO_RESTAURANTE_SUMMARY = "Filtro los pedidos por el restaurante";
     public static final String OP_LISTA_PEDIDO_SUMMARY = "Lista de pedidos por estado";
     public static final String OP_CREAR_PEDIDO_DESC = """
         El cliente realiza un pedido de platos a un restaurante. 
@@ -54,10 +55,12 @@ public final class SwaggerConstants {
             "El pedido debe pertenecer al restaurante del empleado y estar en estado 'PENDIENTE'";
     public static final String OP_ENTREGAR_PEDIDO_DESC = "Entrega el pedido validando con el pin";
     public static final String OP_CANCELAR_PEDIDO_DESC = "El cliente cancela pedido para poder solicitar otro";
+    public static final String OP_FILTRA_PEDIDO_REST_DESC = "El propietario filtra los pedidos por restaurante";
 
     public static final String OP_LISTA_PEDIDO_DESC = "Obtener lista de pedidos filtrando por estado";
 
     public static final String DESC_ID_PEDIDO = "ID del pedido a asignar";
+    public static final String DESC_ID_RESTAURANTE = "ID del restauarnte a filtrar";
     public static final String DESC_ESTADO_PEDIDO = "Estado del pedido a asignar";
     public static final String DESC_PIN_PEDIDO = "Pin de la notificacion";
 

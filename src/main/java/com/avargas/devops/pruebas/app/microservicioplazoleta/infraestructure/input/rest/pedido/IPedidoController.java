@@ -16,4 +16,6 @@ public interface IPedidoController {
     ResponseEntity<?> entregarPedido(HttpServletRequest request,Long idPedido, String estado,String pin, UsuarioAutenticado usuarioAutenticado);
     ResponseEntity<?> cancelarPedido(HttpServletRequest request,Long idPedido, UsuarioAutenticado usuarioAutenticado);
 
+    ResponseEntity<?> filtrarPedidosPorRestaurante(Long idRestaurant);
+
 }

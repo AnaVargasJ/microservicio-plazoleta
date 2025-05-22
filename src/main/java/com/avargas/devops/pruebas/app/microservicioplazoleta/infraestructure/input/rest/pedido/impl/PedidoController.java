@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.EndpointApi.FILTRAR_PEDIDOS_ID_RESTAURANTE;
 import static com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
 @RestController
@@ -164,6 +165,26 @@ public class PedidoController implements IPedidoController {
                 ),
                 HttpStatus.OK
         );
+    }
+
+    @Override
+    @GetMapping(FILTRAR_PEDIDOS_ID_RESTAURANTE)
+    @Operation(summary = SwaggerConstants.OP_FILTRAR_PEDIDO_RESTAURANTE_SUMMARY,
+            description = SwaggerConstants.OP_FILTRA_PEDIDO_REST_DESC)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<?> filtrarPedidosPorRestaurante(
+            @Parameter(description = DESC_ID_RESTAURANTE, required = true)
+            @PathVariable("idRestaurante")
+            Long idRestaurant) {
+        return ResponseEntity.ok(
+                ResponseUtil.success(SwaggerMessagesConstants.PEDIDO_LISTAS_RESTAURANTE_ID + idRestaurant ,
+                        pedidoHandler.filtrarPedidosPorRestaurante(idRestaurant)));
     }
 
 }

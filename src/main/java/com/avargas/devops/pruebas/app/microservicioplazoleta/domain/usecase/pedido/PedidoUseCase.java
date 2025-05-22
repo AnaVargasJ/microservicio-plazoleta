@@ -125,6 +125,11 @@ public class PedidoUseCase implements IPedidoServicePort {
         trazabilidadServicePort.crearTraza(token, pedido,  CANCELADO.name(),  pedido.getIdChef(), correoEmpleado, correoCliente);
     }
 
+    @Override
+    public List<PedidoModel> filtrarPedidosPorRestaurante(Long idRestaurant) {
+        return persistencePort.buscarPedidosPorIdRestaurante(idRestaurant);
+    }
+
     private List<PedidoModel> listarPedidoPorIdRestaurante(Long idRestaurante, String estado, Long idUsuario){
         List<PedidoModel> pedidoModels = persistencePort.buscarPedidosPorIdRestaurante(idRestaurante)
                 .stream().filter(pedido -> {
